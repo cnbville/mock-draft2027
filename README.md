@@ -12,7 +12,7 @@ You need Node 18 or newer. No install step.
 npm start
 ```
 
-Then open http://localhost:8027. Your board, notes and grades are saved in that browser; use **My board → Export** to keep a copy.
+Then open http://localhost:8027. A hosted copy built on 2026-10-15 is at https://claude.ai/artifact/XinfSbHy74ECMWWmmnfSSt (private, and it goes away when the old Claude account closes; the repo is the lasting copy). Your board, notes and grades are saved in that browser; use **My board → Export** to keep a copy.
 
 ## What's in it
 

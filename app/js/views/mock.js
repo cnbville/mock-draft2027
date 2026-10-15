@@ -58,7 +58,7 @@ function live(el, D) {
       <button id="end">Sim to the end</button>
       <button id="restart">New draft</button>
     </div>
-    <div class="grid" style="grid-template-columns: 1fr 2fr 1fr; margin-top:12px">
+    <div class="grid mockgrid" style="margin-top:12px">
       <div class="panel ticker"><h3 style="margin-top:0">Picks</h3>${ticker(D)}</div>
       <div class="panel">
         ${onClock ? `<h3 style="margin-top:0">You're on the clock</h3>
@@ -126,7 +126,7 @@ function tradePanel(D) {
       <div><b>You give</b>${open(me).slice(0, 14).map(({ x, k }) => `<div><label><input type="checkbox" data-give="${k}"> ${x.overall} (rd ${x.round}, ${Math.round(S.value(x.overall))})</label></div>`).join('')}</div>
       <div><b>You get</b>${open(p).slice(0, 14).map(({ x, k }) => `<div><label><input type="checkbox" data-get="${k}"> ${x.overall} (rd ${x.round}, ${Math.round(S.value(x.overall))})</label></div>`).join('')}</div>
     </div>
-    <button id="offer">Offer trade</button> <span id="tradeMsg"></span>
+    <button id="offer">Offer trade</button> <span id="tradeMsg" class="good">${esc(S.tradeMsg ?? '')}</span>
     <div class="muted">Numbers are chart points (computed from real career value per pick).</div></div>`;
 }
 
@@ -137,9 +137,10 @@ function wireTrade(el, D, rerender) {
   el.querySelector('#offer').onclick = () => {
     const give = [...el.querySelectorAll('[data-give]:checked')].map(i => +i.dataset.give);
     const get = [...el.querySelectorAll('[data-get]:checked')].map(i => +i.dataset.get);
+    S.tradeMsg = '';
     if (!give.length || !get.length) { el.querySelector('#tradeMsg').textContent = 'Pick at least one pick on each side.'; return; }
     const res = proposeTrade(S, el.querySelector('#tme').value, give, get);
-    if (res.ok) { S.status = S.userTeams.has(S.picks[S.next].owner) ? 'user' : advance(S); rerender(); alert(res.reason); }
+    if (res.ok) { S.status = S.userTeams.has(S.picks[S.next].owner) ? 'user' : advance(S); S.tradeMsg = res.reason; rerender(); }
     else el.querySelector('#tradeMsg').textContent = res.reason;
   };
 }

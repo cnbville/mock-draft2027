@@ -17,6 +17,7 @@ export function mineView(el, D) {
       <span class="spacer"></span>
       <button id="clear">Clear my board</button>
     </div>
+    <div id="msg" class="small" style="margin-top:6px"></div>
     ${list.length ? `<div class="grid g2" style="margin-top:12px;grid-template-columns:2fr 1fr">
       <div class="tablewrap"><table><thead><tr><th class="num">Mine</th><th>Player</th><th>Pos</th><th>School</th><th>Class</th>
         <th class="num">Consensus</th><th class="num">Model</th><th class="num">Diff</th><th>Grade avg</th><th>Tier</th><th></th></tr></thead>
@@ -32,11 +33,21 @@ export function mineView(el, D) {
     D.prospects.filter(p => p.consensus_rank).sort((a, b) => a.consensus_rank - b.consensus_rank).slice(0, 100).forEach(p => store.add(p.id));
     mineView(el, D);
   };
-  el.querySelector('#exp').onclick = () => download(`my-board-${new Date().toISOString().slice(0, 10)}.json`, store.exportJSON());
-  el.querySelector('#imp').onchange = async e => {
-    try { store.importJSON(await e.target.files[0].text()); mineView(el, D); } catch (err) { alert(err.message); }
+  el.querySelector('#exp').onclick = () => {
+    const text = store.exportJSON();
+    download(`my-board-${new Date().toISOString().slice(0, 10)}.json`, text);
+    // Where downloads are blocked (a hosted preview), show the text to copy instead.
+    el.querySelector('#msg').innerHTML = `If no file was saved, copy this into a .json file:<br><textarea id="expText" rows="5" style="width:100%">${esc(text)}</textarea>`;
   };
-  el.querySelector('#clear').onclick = () => { if (confirm('Clear your whole board, notes and grades?')) { store.reset(); mineView(el, D); } };
+  el.querySelector('#imp').onchange = async e => {
+    try { store.importJSON(await e.target.files[0].text()); mineView(el, D); } catch (err) { el.querySelector('#msg').textContent = `Import failed: ${err.message}`; }
+  };
+  el.querySelector('#clear').onclick = e => {
+    // Two clicks: the first asks, the second clears.
+    if (e.target.dataset.armed) { store.reset(); mineView(el, D); return; }
+    e.target.dataset.armed = '1';
+    e.target.textContent = 'Click again to clear your board, notes and grades';
+  };
 
   const tbody = el.querySelector('#rows');
   if (!tbody) return;
