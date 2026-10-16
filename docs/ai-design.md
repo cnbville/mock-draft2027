@@ -2,7 +2,7 @@
 
 Built 2026-10-16 on branch `claude/project-thread-sz8qog` from the plan Raichel approved ("Yes, all of it").
 Offer tuning (Raichel chose "Tune offers first") is on branch `claude/draft-ai-tuning-im3eho`, 2026-10-16.
-Not merged: it does not yet meet every backtest target (below).
+Merged to main 2026-10-17 on Raichel's OK. It does not yet meet every backtest target (below).
 
 ## How a team picks
 - `app/js/ai/model.js` scores every player for the team on the clock. The score combines:
