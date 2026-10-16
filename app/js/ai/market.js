@@ -166,7 +166,6 @@ export function odds(state) {
   const cum = new Map();      // player -> Float64Array(n + 1) of summed log-survival from pick k
   const order = [];
   const gone = new Set();
-  const s = Math.max(0.05, state.scE);
   for (const x of snap.util[state.teamIds[0]]) cum.set(x.i, new Float64Array(n + 1));
   for (let m = k; m < to; m++) {
     const pk = state.picks[m];
@@ -178,6 +177,7 @@ export function odds(state) {
     else {
       let mx = -Infinity;
       for (const x of list) if (!gone.has(x.i) && x.u > mx) { mx = x.u; best = x.i; }
+      const s = Math.max(0.05, state.scE * (state.dayScale?.[pk.round - 1] ?? 1));
       let z = 0;
       for (const x of list) if (!gone.has(x.i)) { const e = Math.exp((x.u - mx) / s); p.set(x.i, e); z += e; }
       for (const [i, e] of p) p.set(i, e / z);
@@ -275,11 +275,11 @@ export function buyerMax(state, b, k, j) {
   const gap = c.chart(state.picks[k].overall) - c.chart(state.picks[j].overall);
   const isQB = state.P[t.i].group === 'QB';
   const lam = (isQB ? 1 + (tr.qbUrgency - 1) * qbWant(state, b) : 1) * (tr.overconfidence?.[state.picks[k].round - 1] ?? 1);
-  if (lam * (1 - s1) * t.pv < gap * 0.9) return { max: 0, target: t.i, gain: 0, gap };
+  if (lam * (1 - s1) * t.pv < gap * 0.9) return { max: 0, target: t.i, gain: 0, gap, risk: 1 - s1, isQB };
   const later = expectAt(state, b, j);
   const gain = Math.max(0, now.ev - later.ev);
   const cap = gap * tr.maxOverpay * (isQB ? lam : 1);
-  return { max: Math.min(lam * gain, cap), target: t.i, gain, gap, isQB };
+  return { max: Math.min(lam * gain, cap), target: t.i, gain, gap, isQB, risk: 1 - s1 };
 }
 
 // The picks a team still holds, from pick index `from` on.

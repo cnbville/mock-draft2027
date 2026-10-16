@@ -48,7 +48,8 @@ export function judge(state, A, receive, give, { pressure = 0, discount = 0 } = 
     // On the clock, it assumes you're after its top player.
     const top = g0 === k ? state._snap?.util?.[A]?.[0]?.i ?? null : null;
     const sa = sellerAsk(state, A, g0, j, top, extraMargin);
-    const extra = sa.ask - sa.gap * (1 + m);
+    // You called, so it wasn't shopping the pick: no deep-tier discount, and its call premium (TUNING.trades).
+    const extra = sa.ask - sa.gap * (1 + m) + tr.eager * Math.max(0, sa.gap - sa.loss) + (tr.callPremium?.[round - 1] ?? 0) * vout;
     return { net: vin - vout * (1 + m) - extra, kind: 'down', loss: sa.loss, gap: sa.gap, extra, at: g0, j };
   }
   // Moving up: it gets a pick before its own next one.
@@ -56,7 +57,9 @@ export function judge(state, A, receive, give, { pressure = 0, discount = 0 } = 
     const own = picksOf(state, A)[0] ?? null;
     if (own != null && own > r0 && has(give, own)) {
       const bm = buyerMax(state, A, r0, own);
-      const max = (bm?.max ?? 0) * (1 - 0.25 * pressure);
+      // A fair price for the right to pick first: a team with a player it likes at risk pays about its chart gap.
+      const fair = bm ? (bm.gap + (tr.fairBuy?.[round - 1] ?? 0) * v(r0)) * Math.min(1, (bm.risk ?? 0) / (tr.fairRisk ?? 1)) : 0;
+      const max = Math.max(bm?.max ?? 0, fair) * (1 - 0.25 * pressure);
       const paid = vout - v(own), back = vin - v(r0);
       return { net: max - paid + back, kind: 'up', gain: bm?.gain ?? 0, max, at: r0, j: own, isQB: bm?.isQB };
     }

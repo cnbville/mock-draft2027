@@ -22,12 +22,15 @@ export const TUNING = {
   // the day itself. Fitted in the backtest to real drafts' falls and ranges (ai_model.json overrides these).
   // scale: the whole spread against the fitted logit's. Below 1, the AI is surer than a single-pick fit says: the fit's
   // spread also holds what the model can't see (visits, medicals), which real teams know, so sims spread too wide.
-  noise: { shared: 0.3, team: 0.3, tail: 4, varianceScale: 0.15, scale: 1 },
+  // day: the day's own noise by round, against round 1's. Later rounds' picks spread less than one logit fit says
+  // (tuned so 30-slot reaches and falls match real drafts 2020-2026 while round 1's 80% ranges stay near 80%).
+  noise: { shared: 0.3, team: 0.3, tail: 4, varianceScale: 0.15, scale: 1, day: [1, 0.5, 0.5, 1, 1, 1, 1] },
   trades: {
     window: [40, 40, 32, 32, 32, 32, 32],      // how far behind a buyer can be, by round (slots; estimated)
     // Chance a workable deal gets done when a team calls, by round (most don't: minutes, few calls, cold feet).
     // Tuned with overconfidence so trade counts match real draft weekends 2018-2023.
-    dealRate: [0.27, 0.21, 0.145, 0.13, 0.13, 0.13, 0.13],
+    // Rounds 2-3 lowered with their calmer day noise (noise.day), which made more deals workable there.
+    dealRate: [0.27, 0.09, 0.06, 0.13, 0.13, 0.13, 0.13],
     maxPerRound: [12, 12, 12, 10, 10, 10, 10],  // a safety cap only
     attachment: 0.6,        // how much a team on the clock charges for loving its player (share of the gap)
     // How much a buyer pays over the gain it expects, by round. Teams overrate the right to choose (Massey and
@@ -44,6 +47,18 @@ export const TUNING = {
     slack: 0.3,             // either side gives a little to get a deal done in minutes (share of the price; tuned)
     vetRate: [0.04, 0.04, 0.025, 0.015, 0, 0, 0],  // chance per pick of a veteran-for-pick look, by round (estimated)
     callRate: [0.6, 0.5, 0.45, 0.35, 0.35, 0.3, 0.3], // chance an interested AI team calls you, by round (estimated)
+    // Your offers only (the AI-to-AI market doesn't use these). Tuned on the offers test for 2020-2023 (every real
+    // draft-day trade put to the AI both ways, and 15% short) and checked on 2024-2026.
+    // callPremium: when you call to move up, the team wasn't shopping its pick, so it takes no deep-tier discount.
+    // It then wants this share of its pick's value over its own ask, by round. In rounds 1-3 real prices sit within
+    // a few percent of the chart, and its own ask (margin, love for its player) runs a little above that, so it
+    // gives a bit back. On day 3 real prices scatter widely, so it holds at its ask.
+    callPremium: [-0.08, -0.08, -0.08, 0, 0, 0, 0],
+    // fairBuy: when you call to move back, a team with a player it likes at risk pays up to its chart gap plus this
+    // share of your pick's value (day 3 buyers pay a bigger sweetener; computed from real prices), scaled by how
+    // likely its player is gone by its own pick (full at fairRisk).
+    fairBuy: [0.08, 0.08, 0.08, 0.16, 0.16, 0.16, 0.16],
+    fairRisk: 0.05,
   },
 };
 
@@ -140,7 +155,7 @@ export function newDraft({ prospects, teams, chart, model = DEFAULT_MODEL, marke
   const charts = makeCharts(market, teams, value);
   const state = {
     r, value, prospects, teams, teamIds, declared, userTeams: new Set(userTeams),
-    picks: buildPicks(teams), next: 0, taken: new Map(), C, P, T, shared, own, scE, dayNoise: on, tuning: tr, charts,
+    picks: buildPicks(teams), next: 0, taken: new Map(), C, P, T, shared, own, scE, dayScale: nz.day, dayNoise: on, tuning: tr, charts,
     utilityFn: utility, baseFn: baseUtility, base: {},
     dynW: [0, 1, 2].map(b => ({ taken: C.w[C.idx[`taken|${b}`]], run: C.w[C.idx[`run|${b}`]], scarce: C.w[C.idx[`scarce|${b}`]] })),
     teamTaken: Object.fromEntries(teamIds.map(t => [t, {}])), recent: [], tradeLog: [], tradesThisRound: 0, round: 1,
@@ -211,7 +226,7 @@ function aiChoose(state, team) {
   if (pick.target != null && !state.taken.has(pick.target) && state.declared[pick.target]) return pick.target;
   let best = null, bs = -Infinity;
   for (const { i, gr } of candidates(state)) {
-    const s = utility(state, team, i, pick.round, gr) + (state.dayNoise ? state.scE * state.r.gumbel() : 0);
+    const s = utility(state, team, i, pick.round, gr) + (state.dayNoise ? state.scE * (state.dayScale?.[pick.round - 1] ?? 1) * state.r.gumbel() : 0);
     if (s > bs) { bs = s; best = i; }
   }
   return best;
