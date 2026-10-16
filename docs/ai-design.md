@@ -58,3 +58,11 @@ Offers test: every real draft-day trade is put to the AI both ways, then again 1
 - One sim spreads a little too wide: more 20-spot reaches and falls than real drafts.
 - When you move up, the AI as seller accepts a lowball 15% short about a quarter of the time. When you move down, it as buyer rarely accepts the real price outright, but almost always counters.
 - 2022 has no usable public board, and 2021's covers only the top 130.
+
+## Next: tuning (Raichel chose "Tune offers first", 2026-10-16)
+Nothing is tuned yet. The plan:
+- Lowballs when you move up: this is the AI's "down" branch in `judge()` (offers.js), which prices with `sellerAsk` (market.js) and a margin. The margin is too small to refuse a 15% short offer.
+- Real prices when you move down: this is the "up" branch, `buyerMax × (1 − 0.25 × pressure)`. The ceiling is too low, so the AI counters instead of accepting.
+- Spread: the noise in TUNING.noise drives it. Narrow it, but keep the 80% ranges near 80%.
+- `sellerAsk` and `buyerMax` also drive the AI-to-AI trades, so trade counts and prices must stay near real.
+- Handoff notes: /mnt/project-files/draft-room/ai-tuning-handoff.md (project folder).
