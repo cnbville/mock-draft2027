@@ -9,6 +9,7 @@ measured against the league:
   senior_tilt share of his picks aged 22.5+ at the draft, over the league
   size_tilt   how big his picks were (weight z within position), over the league
   p4_tilt     share of his picks from Power 4 schools (and Notre Dame), over the league
+  sb_tilt     share of his picks who played in the Senior Bowl, over the league (2016 on)
   trade_up_rate / trade_down_rate   his draft-day trades up / down per draft, against the league (1 = average)
   chart_tilt  how far his trade prices sat from the market chart (paid more to move up, asked more to move down)
   future_tilt how readily he spends future picks (negative = values them less than the market)
@@ -86,6 +87,13 @@ def pick_table():
     d["p4"] = [1.0 if conf.get((s - 1, C.norm_college(str(col)))) in P4 or str(col) == "Notre Dame"
                else (0.0 if (s - 1, C.norm_college(str(col))) in conf else np.nan)
                for s, col in zip(d.season, d.college)]
+    sb = research("allstar.csv")
+    if sb is not None:
+        keys = {(int(r.draft_year), C.norm_name(r.player)) for r in sb[sb.game == "senior_bowl"].itertuples()}
+        d["sb"] = [float((s, C.norm_name(str(n))) in keys) if s >= 2016 else np.nan
+                   for s, n in zip(d.season, d.pfr_player_name)]
+    else:
+        d["sb"] = np.nan
     return d
 
 
@@ -187,7 +195,7 @@ def profile(Y, team):
         "lead": r.lead, "draft_lead": r.draft_lead, "gm": r.gm, "hc": r.hc, "gm_start": int(r.gm_start),
         "hc_start": int(r.hc_start), "new_gm": new_gm, "new_hc": bool(r.hc_start == Y), "drafts_run": n_drafts,
         "profile": {"pos_tilt": pos_tilt, "ath_tilt": tilt("ath", 30), "senior_tilt": tilt("senior", 30),
-                    "size_tilt": {g: size for g in lg_share.index}, "p4_tilt": tilt("p4", 30), "sb_tilt": 0.0,
+                    "size_tilt": {g: size for g in lg_share.index}, "p4_tilt": tilt("p4", 30), "sb_tilt": tilt("sb", 30),
                     "trade_up_rate": up_rate, "trade_down_rate": down_rate, "chart_tilt": chart_tilt,
                     "future_tilt": future_tilt},
     }

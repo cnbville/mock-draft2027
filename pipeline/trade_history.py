@@ -13,9 +13,9 @@ import pandas as pd
 from scipy.optimize import minimize
 
 import asof
-from common import APP_DATA, BUILD, RAW
+from common import APP_DATA, BUILD, RAW, ROOT
 
-YEARS = list(range(2011, 2026))
+YEARS = list(range(2011, 2027))
 FIRST_DAY = {2011: "2011-04-28", 2012: "2012-04-26", 2013: "2013-04-25", **asof.DRAFT_EVE}
 FIT_YEARS = range(2011, 2024)   # the chart is fitted on drafts before the backtest years
 
@@ -25,11 +25,29 @@ def draft_days(Y):
     return {str((d0 + pd.Timedelta(days=i)).date()) for i in range(3)}
 
 
+def researched(Y):
+    """Draft-weekend trades copied from public trackers (data/research/trades_<Y>_draft.csv), for a draft the
+    nflverse trade list doesn't have yet."""
+    f = ROOT / "data" / "research" / f"trades_{Y}_draft.csv"
+    if not f.exists():
+        return pd.DataFrame(columns=["trade_id", "trade_date", "gave", "received", "pick_season", "pick_round",
+                                     "pick_number", "conditional", "pfr_id", "pfr_name"])
+    r = pd.read_csv(f)
+    return pd.DataFrame({"trade_id": 90000 + r.trade_no, "season": Y, "trade_date": r.date, "gave": r.team_from,
+                         "received": r.team_to, "pick_season": r.pick_season.where(r.asset_type == "pick"),
+                         "pick_round": r.pick_round.where(r.asset_type == "pick"),
+                         "pick_number": r.pick_number.where(r.asset_type == "pick"),
+                         "conditional": r.conditional, "pfr_id": None,
+                         "pfr_name": r.player.where(r.asset_type == "player")})
+
+
 def raw_trades(Y):
     """Draft-weekend trade rows, repaired the way the backtest repairs them (true pick numbers from the drafted
     player; a single-row pick whose giver used it is reversed)."""
     tr = pd.read_csv(RAW / "trades.csv", low_memory=False)
     x = tr[tr.trade_date.isin(draft_days(Y))].copy()
+    if not len(x):
+        x = researched(Y)
     if Y == 2025 and not ((x.trade_id == 1922) & (x.pick_number == 32)).any():
         x = pd.concat([x, pd.DataFrame([{"trade_id": 1922, "season": 2025, "trade_date": "2025-04-24", "gave": "PHI",
                                          "received": "KC", "pick_season": 2025.0, "pick_round": 1.0,
