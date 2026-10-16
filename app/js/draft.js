@@ -20,7 +20,9 @@ export const TUNING = {
   perGroup: 4,
   // Noise shares (of the logit's day-to-day spread): the league's view of a player, each team's own view, and
   // the day itself. Fitted in the backtest to real drafts' falls and ranges (ai_model.json overrides these).
-  noise: { shared: 0.3, team: 0.3, tail: 4, varianceScale: 0.15 },
+  // scale: the whole spread against the fitted logit's. Below 1, the AI is surer than a single-pick fit says: the fit's
+  // spread also holds what the model can't see (visits, medicals), which real teams know, so sims spread too wide.
+  noise: { shared: 0.3, team: 0.3, tail: 4, varianceScale: 0.15, scale: 1 },
   trades: {
     window: [40, 40, 32, 32, 32, 32, 32],      // how far behind a buyer can be, by round (slots; estimated)
     // Chance a workable deal gets done when a team calls, by round (most don't: minutes, few calls, cold feet).
@@ -124,8 +126,9 @@ export function newDraft({ prospects, teams, chart, model = DEFAULT_MODEL, marke
   // Noise layers, each a share of the logit's spread (a standard Gumbel has variance pi^2/6).
   const G2 = Math.PI ** 2 / 6;
   const on = noise ? 1 : 0;
-  const sdS = on * Math.sqrt(nz.shared * G2), sdT = on * Math.sqrt(nz.team * G2);
-  const scE = Math.sqrt(Math.max(0.05, 1 - nz.shared - nz.team));
+  const k = nz.scale ?? 1;
+  const sdS = on * k * Math.sqrt(nz.shared * G2), sdT = on * k * Math.sqrt(nz.team * G2);
+  const scE = k * Math.sqrt(Math.max(0.05, 1 - nz.shared - nz.team));
   const shared = new Float64Array(P.length);
   for (let i = 0; i < P.length; i++) shared[i] = sdS * (1 + nz.varianceScale * P[i].variance) * r.t(nz.tail);
   const own = {};
