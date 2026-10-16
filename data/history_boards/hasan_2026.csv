@@ -1,0 +1,301 @@
+ovr,eval,name,position,school,variance
+1,1,Fernando Mendoza,QB,Indiana,99.1
+2,3,Arvell Reese,LB,Ohio State,75.7
+3,2,Jeremiyah Love,RB,Notre Dame,76.5
+4,4,Caleb Downs,S,Ohio State,79.7
+5,5,Sonny Styles,LB,Ohio State,76.5
+6,6,Rueben Bain Jr.,EDGE,Miami (FL),84.3
+7,7,David Bailey,EDGE,Texas Tech,86.0
+8,10,Francis Mauigoa,OT,Miami (FL),79.2
+9,9,Carnell Tate,WR,Ohio State,79.2
+10,8,Mansoor Delane,CB,LSU,71.1
+11,11,Spencer Fano,OT,Utah,84.2
+12,14,Makai Lemon,WR,USC,82.4
+13,15,Olaivavega Ioane,OG,Penn State,84.2
+14,13,Jermod McCoy,CB,Tennessee,81.1
+15,12,Jordyn Tyson,WR,Arizona State,83.3
+16,16,Kenyon Sadiq,TE,Oregon,81.1
+17,17,Dillon Thieneman,S,Oregon,87.4
+18,18,Monroe Freeling,OT,Georgia,99.2
+19,19,Kadyn Proctor,OT,Alabama,106.4
+20,20,Keldric Faulk,EDGE,Auburn,118.1
+21,21,Avieon Terrell,CB,Clemson,109.6
+22,22,Akheem Mesidor,EDGE,Miami (FL),108.7
+23,24,KC Concepcion,WR,Texas A&M,92.8
+24,25,Emmanuel McNeil-Warren,S,Toledo,88.8
+25,26,Omar Cooper Jr.,WR,Indiana,99.2
+26,23,Peter Woods,DL3T,Clemson,99.1
+27,27,Denzel Boston,WR,Washington,84.7
+28,28,Caleb Lomu,OT,Utah,87.4
+29,29,Kayden McDonald,DL1T,Ohio State,82.5
+30,30,T.J. Parker,EDGE,Clemson,93.7
+31,31,Blake Miller,OT,Clemson,91.0
+32,32,Colton Hood,CB,Tennessee,87.0
+33,33,Max Iheanachor,OT,Arizona State,92.4
+34,35,Chris Johnson,CB,San Diego State,92.8
+35,34,CJ Allen,LB,Georgia,96.4
+36,37,Cashius Howell,EDGE,Texas A&M,91.0
+37,36,Caleb Banks,DL1T,Florida,91.9
+38,38,Ty Simpson,QB,Alabama,105.1
+39,39,Zion Young,EDGE,Missouri,93.8
+40,40,D'Angelo Ponds,CB,Indiana,88.3
+41,41,Emmanuel Pregnon,OG,Oregon,90.1
+42,44,Christen Miller,DL1T,Georgia,90.2
+43,43,Jacob Rodriguez,LB,Texas Tech,87.4
+44,42,Brandon Cisse,CB,South Carolina,89.7
+45,45,Lee Hunter,DL1T,Texas Tech,94.6
+46,46,Chase Bisontis,OG,Texas A&M,84.7
+47,47,R Mason Thomas,EDGE,Oklahoma,85.6
+48,48,Malachi Lawrence,EDGE,UCF,94.2
+49,49,Anthony Hill Jr.,LB,Texas,101.0
+50,50,Gabe Jacas,EDGE,Illinois,86.5
+51,51,Germie Bernard,WR,Alabama,84.2
+52,53,Jake Golday,LB,Cincinnati,81.5
+53,55,Jadarian Price,RB,Notre Dame,89.7
+54,52,Chris Bell,WR,Louisville,94.6
+55,58,Keionte Scott,CB,Miami (FL),84.3
+56,54,A.J. Haulcy,S,LSU,82.9
+57,56,Chris Brazzell II,WR,Tennessee,97.8
+58,60,Eli Stowers,TE,Vanderbilt,101.0
+59,61,Keylan Rutledge,OG,Georgia Tech,93.7
+60,57,Treydan Stukes,CB,Arizona,99.2
+61,59,Keith Abney II,CB,Arizona State,96.9
+62,63,Josiah Trotter,LB,Missouri,88.8
+63,62,Derrick Moore,EDGE,Michigan,96.0
+64,64,Zachariah Branch,WR,Georgia,108.6
+65,65,Gennings Dunker,OG,Iowa,86.1
+66,66,Antonio Williams,WR,Clemson,90.1
+67,67,Caleb Tiernan,OT,Northwestern,89.7
+68,71,Kyle Louis,LB,Pitt,89.7
+69,70,Elijah Sarratt,WR,Indiana,88.7
+70,68,Domonique Orange,DL1T,Iowa State,90.6
+71,69,Max Klare,TE,Ohio State,91.0
+72,72,Dani Dennis-Sutton,EDGE,Penn State,93.7
+73,75,Malachi Fields,WR,Notre Dame,96.5
+74,78,Mike Washington Jr.,RB,Arkansas,96.9
+75,73,Ted Hurst,WR,Georgia State,94.2
+76,74,Connor Lew,OC,Auburn,96.4
+77,76,Joshua Josephs,EDGE,Tennessee,91.1
+78,79,Romello Height,EDGE,Texas Tech,93.7
+79,81,Bud Clark,S,TCU,91.9
+80,77,Sam Hecht,OC,Kansas State,91.5
+81,80,Davison Igbinosun,CB,Ohio State,97.8
+82,82,Garrett Nussmeier,QB,LSU,93.8
+83,83,Gracen Halton,DL3T,Oklahoma,104.6
+84,85,Skyler Bell,WR,UConn,100.5
+85,90,Jaishawn Barham,EDGE,Michigan,101.0
+86,84,Chandler Rivers,CB,Duke,91.5
+87,87,Bryce Lance,WR,NDSU,87.0
+88,88,Zakee Wheatley,S,Penn State,89.2
+89,89,Malik Muhammad,CB,Texas,92.4
+90,91,Keyron Crawford,EDGE,Auburn,99.2
+91,94,Jalon Kilgore,S,South Carolina,97.4
+92,86,Kamari Ramsey,S,USC,101.0
+93,93,Jake Slaughter,OC,Florida,101.9
+94,92,Jonah Coleman,RB,Washington,98.7
+95,97,Logan Jones,OC,Iowa,97.3
+96,96,Deion Burks,WR,Oklahoma,88.8
+97,95,Genesis Smith,S,Arizona,97.8
+98,98,Darrell Jackson Jr.,DL3T,Florida State,92.4
+99,100,De'Zhaun Stribling,WR,Ole Miss,119.5
+100,99,Emmett Johnson,RB,Nebraska,89.2
+101,103,Oscar Delp,TE,Georgia,113.2
+102,101,Daylen Everette,CB,Georgia,102.8
+103,102,Sam Roush,TE,Stanford,91.0
+104,104,Julian Neal,CB,Arkansas,97.3
+105,106,Austin Barber,OT,Florida,94.6
+106,105,Jalen Farmer,OG,Kentucky,88.8
+107,107,Devin Moore,CB,Florida,89.2
+108,111,Chris McClellan,DL3T,Missouri,101.9
+109,113,Brenen Thompson,WR,Mississippi State,101.0
+110,118,Trey Zuhn III,OC,Texas A&M,97.8
+111,110,Brian Parker II,OC,Duke,87.4
+112,108,LT Overton,EDGE,Alabama,100.5
+113,109,Ja'Kobi Lane,WR,USC,105.5
+114,120,Carson Beck,QB,Miami (FL),92.8
+115,112,Justin Joly,TE,NC State,82.9
+116,114,Markel Bell,OT,Miami (FL),107.3
+117,115,Deontae Lawson,LB,Alabama,116.8
+118,116,Michael Trigg,TE,Baylor,101.0
+119,117,Will Lee III,CB,Texas A&M,83.8
+120,119,Tacario Davis,CB,Washington,96.9
+121,122,Drew Allar,QB,Penn State,91.9
+122,123,V.J. Payne,S,Kansas State,106.8
+123,126,Kaleb Proctor,DL5T,SE Louisiana,104.6
+124,128,Dametrious Crownover,OT,Texas A&M,94.2
+125,125,Billy Schrauth,OG,Notre Dame,83.4
+126,121,Eli Raridon,TE,Notre Dame,95.6
+127,124,Cole Payton,QB,NDSU,101.0
+128,127,Jack Endries,TE,Texas,101.4
+129,135,Tyler Onyedim,DL5T,Texas A&M,116.3
+130,129,Kaytron Allen,RB,Penn State,81.1
+131,131,Kage Casey,OG,Boise State,84.2
+132,130,Jude Bowry,OT,Boston College,78.4
+133,136,Nick Singleton,RB,Penn State,82.9
+134,132,Keyshaun Elliott,LB,Arizona State,108.7
+135,137,Max Llewellyn,EDGE,Iowa,81.1
+136,138,Travis Burke,OT,Memphis,146.2
+137,140,Rayshaun Benny,DL3T,Michigan,96.9
+138,139,Kaleb Elarms-Orr,LB,TCU,100.5
+139,146,Harold Perkins Jr.,LB,LSU,88.8
+140,141,Zane Durant,DL3T,Penn State,97.8
+141,134,Ephesians Prysock,CB,Washington,94.6
+142,133,Dontay Corleone,DL1T,Cincinnati,109.1
+143,142,Jadon Canady,CB,Oregon,94.6
+144,148,Demond Claiborne,RB,Wake Forest,84.7
+145,155,Michael Taaffe,S,Texas,86.1
+146,147,Beau Stephens,OG,Iowa,89.7
+147,145,Bryce Boettcher,LB,Oregon,91.0
+148,153,Taylen Green,QB,Arkansas,105.0
+149,157,Aiden Fisher,LB,Indiana,90.6
+150,165,Albert Regis,DL3T,Texas A&M,88.8
+151,149,Charles Demmings,CB,Stephen F. Austin,89.2
+152,151,Kevin Coleman Jr.,WR,Missouri,82.9
+153,152,Tanner Koziol,TE,Houston,94.2
+154,150,J.C. Davis,OT,Illinois,90.6
+155,156,Zxavian Harris,DL1T,Ole Miss,99.6
+156,163,Drew Shelton,OT,Penn State,88.3
+157,158,Isaiah World,OT,Oregon,105.0
+158,171,Marlin Klein,TE,Michigan,94.6
+159,160,Josh Cameron,WR,Baylor,96.9
+160,143,Anthony Lucas,EDGE,USC,107.3
+161,167,Caden Curry,EDGE,Ohio State,91.9
+162,144,Taurean York,LB,Texas A&M,102.3
+163,173,Nate Boerkircher,TE,Texas A&M,87.9
+164,166,Keagen Trost,OG,Missouri,95.1
+165,159,Tim Keenan III,DL1T,Alabama,93.3
+166,162,Hezekiah Masses,CB,California,92.8
+167,177,Jimmy Rolder,LB,Michigan,111.8
+168,161,Matt Gulbin,OC,Michigan State,91.9
+169,154,Joe Royer,TE,Cincinnati,93.3
+170,170,DeMonte Capehart,DL3T,Clemson,89.6
+171,169,Cade Klubnik,QB,Clemson,96.9
+172,168,Parker Brailsford,OC,Alabama,100.5
+173,164,Dallen Bentley,TE,Utah,79.7
+174,178,Nick Barrett,DL3T,South Carolina,105.9
+175,176,Diego Pounds,OT,Ole Miss,103.7
+176,175,Jager Burton,OC,Kentucky,99.2
+177,184,Jakobe Thomas,S,Miami (FL),106.8
+178,181,Reggie Virgil,WR,Texas Tech,84.7
+179,174,Nadame Tucker,EDGE,Western Michigan,91.5
+180,185,Jeremiah Wright,OG,Auburn,86.5
+181,183,Bishop Fitzgerald,S,USC,80.2
+182,182,Seth McGowan,RB,Kentucky,89.7
+183,187,Dae'Quan Wright,TE,Ole Miss,82.9
+184,179,Cyrus Allen,WR,Cincinnati,105.1
+185,192,Jeff Caldwell,WR,Cincinnati,85.2
+186,172,Eric McAlister,WR,TCU,105.5
+187,188,Jalen Huskey,S,Maryland,103.2
+188,195,Mason Reiger,EDGE,Wisconsin,97.3
+189,197,Jack Kelly,LB,BYU,98.7
+190,201,Le'Veon Moss,RB,Texas A&M,89.7
+191,203,Febechi Nwaiwu,OG,Oklahoma,107.8
+192,191,Pat Coogan,OC,Indiana,92.4
+193,198,Ar'Maj Reed-Adams,OG,Texas A&M,83.8
+194,180,Tyreak Sapp,DL5T,Florida,101.9
+195,199,DJ Campbell,OG,Texas,85.6
+196,194,Josh Cuevas,TE,Alabama,88.7
+197,190,Red Murdock,LB,Buffalo,91.9
+198,205,Justin Jefferson,LB,Alabama,92.4
+199,186,Louis Moore,S,Indiana,97.3
+200,193,Kendrick Law,WR,Kentucky,99.6
+201,200,Eli Heidenreich,RB,Navy,93.3
+202,189,CJ Daniels,WR,Miami (FL),110.9
+203,202,Aamil Wagner,OT,Notre Dame,86.5
+204,207,Adam Randall,RB,Clemson,81.1
+205,216,Will Kacmarek,TE,Ohio State,99.2
+206,196,Eric Rivers,WR,Georgia Tech,95.1
+207,215,Trey Moore,EDGE,Texas,89.2
+208,206,J'Mari Taylor,RB,Virginia,99.6
+209,210,TJ Hall,CB,Iowa,96.0
+210,219,Robert Spears-Jennings,S,Oklahoma,91.0
+211,211,Domani Jackson,CB,Alabama,95.1
+212,213,Anez Cooper,OG,Miami (FL),88.3
+213,208,John Michael Gyllenborg,TE,Wyoming,84.2
+214,209,Kaelon Black,RB,Indiana,91.9
+215,204,Landon Robinson,DL5T,Navy,90.1
+216,214,Thaddeus Dixon,CB,North Carolina,85.6
+217,220,Lander Barton,LB,Utah,82.4
+218,223,Logan Taylor,OG,Boston College,79.7
+219,224,Caleb Douglas,WR,Texas Tech,104.1
+220,212,Mikail Kamara,EDGE,Indiana,91.5
+221,222,Micah Morris,OG,Georgia,72.5
+222,229,Roman Hemby,RB,Indiana,86.9
+223,228,Sawyer Robertson,QB,Baylor,86.0
+224,230,Fa'alili Fa'amoe,OT,Wake Forest,79.3
+225,221,Jaeden Roberts,OG,Alabama,101.4
+226,236,Dalton Johnson,S,Arizona,91.5
+227,217,Skyler Gill-Howard,DL5T,Texas Tech,87.0
+228,226,Cole Wisniewski,S,Texas Tech,85.2
+229,233,Malik Benson,WR,Oregon,94.6
+230,218,Devon Marshall,CB,NC State,121.3
+231,227,Vincent Anthony Jr.,EDGE,Duke,74.3
+232,232,Carver Willis,OG,Washington,82.5
+233,250,Colbie Young,WR,Georgia,80.2
+234,231,Kendal Daniels,LB,Oklahoma,78.8
+235,238,George Gumbs Jr.,EDGE,Florida,79.7
+236,254,Wesley Williams,EDGE,Duke,100.1
+237,241,Collin Wright,CB,Stanford,73.9
+238,239,Logan Fano,EDGE,Utah,77.5
+239,237,J. Michael Sturdivant,WR,Florida,81.1
+240,242,Riley Nowakowski,TE,Indiana,75.7
+241,234,Matthew Hibner,TE,SMU,73.4
+242,243,Luke Altmyer,QB,Illinois,78.8
+243,244,Fernando Carmona Jr.,OG,Arkansas,74.8
+244,235,Jordan van den Berg,DL5T,Georgia Tech,103.7
+245,248,Jaydn Ott,RB,Oklahoma,88.3
+246,260,Alex Harkey,OG,Oregon,82.0
+247,245,Eric Gentry,LB,USC,83.8
+248,258,Jam Miller,RB,Alabama,74.3
+249,253,Barion Brown,WR,LSU,70.7
+250,246,Quintayvious Hutchins,EDGE,Boston College,71.6
+251,252,Robert Henry Jr.,RB,UTSA,89.7
+252,256,Cameron Ball,DL3T,Arkansas,69.8
+253,257,Kaden Wetjen,WR,Iowa,85.2
+254,261,Brandon Cleveland,DL3T,NC State,68.0
+255,249,Xavier Nwankpa,S,Iowa,69.3
+256,240,Aaron Anderson,WR,LSU,81.6
+257,251,Tyren Montgomery,WR,John Carroll,83.8
+258,255,DeShon Singleton,S,Nebraska,70.7
+259,262,Bryson Eason,DL1T,Tennessee,77.9
+260,259,Andre Fuller,CB,Toledo,71.1
+261,247,Chase Roberts,WR,BYU,65.7
+262,266,Toriano Pride Jr.,CB,Missouri,72.5
+263,267,Lorenzo Styles Jr.,S,Ohio State,72.1
+264,264,Lewis Bond,WR,Boston College,79.3
+265,271,Zavion Thomas,WR,LSU,68.0
+266,270,Deven Eastern,DL1T,Minnesota,69.3
+267,268,Patrick Payton,EDGE,LSU,73.9
+268,283,Lake McRee,TE,USC,75.7
+269,263,Rene Konga,DL5T,Louisville,107.3
+270,277,Noah Whittington,RB,Oregon,67.1
+271,278,Rahsul Faison,RB,South Carolina,72.1
+272,272,Desmond Reid,RB,Pitt,68.0
+273,269,Jaren Kanak,TE,Oklahoma,76.1
+274,265,Nolan Rucci,OT,Penn State,77.9
+275,279,Xavian Sorey Jr.,LB,Arkansas,64.8
+276,290,Harrison Wallace III,WR,Ole Miss,72.5
+277,273,Diego Pavia,QB,Vanderbilt,72.9
+278,289,Latrell McCutchin Sr.,CB,Houston,91.5
+279,276,Haynes King,QB,Georgia Tech,67.1
+280,287,Enrique Cruz Jr.,OT,Kansas,80.2
+281,292,Wade Woodaz,LB,Clemson,72.9
+282,275,Jordan Hudson,WR,SMU,71.6
+283,274,Carsen Ryan,TE,BYU,131.7
+284,281,Jaden Dugger,LB,Louisiana,90.6
+285,284,Caden Barnett,OG,Wyoming,81.5
+286,280,Aaron Graves,DL3T,Iowa,87.4
+287,293,Dillon Bell,WR,Georgia,68.4
+288,291,David Gusta,DL3T,Kentucky,75.2
+289,286,Michael Heldman,EDGE,Central Michigan,92.4
+290,285,Ethan Burke,EDGE,Texas,89.2
+291,282,Brent Austin,CB,California,106.4
+292,288,Jalon Daniels,QB,Kansas,63.9
+293,298,Behren Morton,QB,Texas Tech,61.2
+294,294,James Brockermeyer,OC,Miami (FL),61.2
+295,309,Scooby Williams,LB,Texas A&M,61.7
+296,296,Avery Smith,CB,Toledo,72.5
+297,304,Namdi Obiazor,LB,TCU,67.1
+298,297,Jalen Stroman,S,Notre Dame,78.8
+299,306,Jack Pyburn,EDGE,LSU,61.2
+300,301,Vinny Anthony II,WR,Wisconsin,61.2

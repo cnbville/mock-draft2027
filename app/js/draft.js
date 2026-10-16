@@ -1,29 +1,48 @@
-// The mock draft engine. Pure logic, no page code, so it runs in the browser and in Node tests.
-// Every tuning number is here, in TUNING, and is estimated unless it says otherwise.
+// The mock draft engine. Pure logic, no page code, so it runs in the browser, in Node tests and in the backtest.
+//
+// How an AI team picks: app/js/ai/model.js scores every available player for that team (talent, position by
+// round, needs, scheme fit, GM tastes, testing, flags, runs), with weights fitted on real drafts
+// (app/data/ai_model.json). Each simulated draft adds three layers of noise: the league's view of a player, each
+// team's own view, and the call on the day.
+// How trades work: app/js/ai/market.js. Every team values picks on a chart fitted to real draft-day trades
+// (with its own GM's slant), and values the player it would take at a pick through its own board. A trade
+// happens when the team moving up gains more than the team moving down asks, both ways and in every round.
+// Your offers get the same judgement, plus counteroffers, plain reasons, memory and the clock (app/js/ai/offers.js).
 
+import { GROUPS, compile, features, playerFacts, teamFacts, dot, bucketOf, slotOf, SLOT_ROUND } from './ai/model.js';
+import { makeCharts, futureValue } from './ai/market.js';
+import { tryMarket } from './ai/trades.js';
+import { evaluateOffer as evalOffer, executeTrade, makeCalls, callStillGood, CLOCK } from './ai/offers.js';
+
+// Numbers that are not fitted to data are here, labelled estimated. Fitted ones come from ai_model.json.
 export const TUNING = {
-  // How much each position is worth on draft day against its board rank (estimated from how early
-  // each position goes in real drafts; a QB premium needs a team that needs a QB).
-  posValue: { QB: 1.18, EDGE: 1.08, OT: 1.06, CB: 1.03, WR: 1.0, DT: 1.0, TE: 0.95, IOL: 0.94, LB: 0.92,
-    S: 0.92, RB: 0.9, K: 0.35, P: 0.35, LS: 0.2 },
-  qbWithoutNeed: 0.92,     // QB value for a team whose QB need is low
-  needWeight: [0.3, 0.35, 0.4, 0.45, 0.45, 0.5, 0.5],  // need weight by round
-  needAfterPick: 0.35,     // need left at a group after drafting a player there
-  boardNoise: 0.2,         // how much each team's board differs (log scale)
-  gradeSpread: 1.6,        // teams' grades separate players more than the flat pick-value chart does
-  pickNoise: 0.05,         // day-of randomness on each pick (log scale)
-  reachChance: [0.04, 0.07, 0.1, 0.12, 0.14, 0.16, 0.18],  // chance a pick looks past the top choice
-  candidates: 60,          // how many available players each pick considers
-  runBonus: 1.04,          // a team that needs a position moves it up when a run starts
-  tradeRounds: 3,          // AI trades happen in rounds 1-3
-  tradeLookahead: 12,      // a team trading up looks at picks this many slots ahead of its own
-  tradeUrgency: 0.2,       // how much better its target must be than what it expects at its own pick
-  tradePremium: 1.05,      // the team trading up pays 5% over the chart
-  // Chance per pick that a team with a strong reason moves up (for a team that trades as often as average).
-  // Tuned so a mock has about 6 trades at first-round picks and 17 in rounds 1-3; real April trades
-  // 2018-2025 averaged 6.1 and 20 (nflverse trades; computed, includes a few pre-draft April deals).
-  tradeChance: 0.32,
-  maxTradesPerRound: 7,
+  candidates: 150,          // players each pick looks at (the best by board rank, plus the top 4 at each position)
+  perGroup: 4,
+  // Noise shares (of the logit's day-to-day spread): the league's view of a player, each team's own view, and
+  // the day itself. Fitted in the backtest to real drafts' falls and ranges (ai_model.json overrides these).
+  noise: { shared: 0.3, team: 0.3, tail: 4, varianceScale: 0.15 },
+  trades: {
+    window: [40, 40, 32, 32, 32, 32, 32],      // how far behind a buyer can be, by round (slots; estimated)
+    // Chance a workable deal gets done when a team calls, by round (most don't: minutes, few calls, cold feet).
+    // Tuned with overconfidence so trade counts match real draft weekends 2018-2023.
+    dealRate: [0.27, 0.21, 0.145, 0.13, 0.13, 0.13, 0.13],
+    maxPerRound: [12, 12, 12, 10, 10, 10, 10],  // a safety cap only
+    attachment: 0.6,        // how much a team on the clock charges for loving its player (share of the gap)
+    // How much a buyer pays over the gain it expects, by round. Teams overrate the right to choose (Massey and
+    // Thaler, "The Loser's Curse", 2013), and on day 3 the model's own read of the risk is too calm, so these are
+    // fitted: with dealRate they make trade counts, distances and prices match real draft weekends 2018-2023.
+    overconfidence: [1.0, 2.2, 3.2, 4, 4, 4, 4],
+    trust: 0.5,             // share of its own read a team puts on the line when it values players on its board
+    eager: 0.15,            // how much below chart a team with a deep tier takes to move back (share of the gap)
+    split: 1,               // they settle anywhere between the seller's ask and the buyer's most
+    qbUrgency: 1.35,        // a QB-needy buyer pays more for a QB
+    margin: 0.02,           // the team moving down wants a little more than chart value
+    maxOverpay: 1.35,       // the most a buyer pays over the chart gap (more for a QB it needs; estimated)
+    assetFuss: 0.1,         // simple deals win: each extra pick counts against a package (share of the price; tuned)
+    slack: 0.3,             // either side gives a little to get a deal done in minutes (share of the price; tuned)
+    vetRate: [0.04, 0.04, 0.025, 0.015, 0, 0, 0],  // chance per pick of a veteran-for-pick look, by round (estimated)
+    callRate: [0.6, 0.5, 0.45, 0.35, 0.35, 0.3, 0.3], // chance an interested AI team calls you, by round (estimated)
+  },
 };
 
 export function rng(seed) {
@@ -40,6 +59,13 @@ export function rng(seed) {
     const u = Math.max(r(), 1e-12), v = r();
     return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
   };
+  r.gumbel = () => -Math.log(-Math.log(Math.max(r(), 1e-12)));
+  r.t = nu => {
+    // Student t: fat tails, so a few players a year fall (or rise) far more than the rest.
+    let chi = 0;
+    for (let k = 0; k < nu; k++) { const z = r.normal(); chi += z * z; }
+    return r.normal() / Math.sqrt(chi / nu) * Math.sqrt((nu - 2) / nu);
+  };
   return r;
 }
 
@@ -50,6 +76,11 @@ export function makeValue(chart) {
 
 // Build the 257 picks: 224 owned picks plus 33 placeholder compensatory picks in rounds 3-7.
 export function buildPicks(teams) {
+  // A full real pick list (past drafts, or this year's once compensatory picks are out) is used as it is.
+  if (teams.picks.length >= 250 && teams.picks.every(p => p.overall != null)) {
+    return teams.picks.slice().sort((a, b) => a.overall - b.overall)
+      .map(p => ({ round: p.round, owner: p.owner, original: p.original ?? p.owner, comp: !!p.comp, overall: p.overall }));
+  }
   const order = teams.order;
   const byRound = {};
   for (const p of teams.picks) (byRound[p.round] ??= []).push(p);
@@ -69,38 +100,52 @@ export function buildPicks(teams) {
   return out;
 }
 
-function needMap(team) {
-  const m = {};
-  for (const [g, v] of Object.entries(team.needs)) m[g] = v.need;
-  return m;
-}
+// A small default so the engine runs before a model is fitted (tests, first build). Fitted values replace it.
+export const DEFAULT_MODEL = {
+  weights: { 'talent|0': 1.7, 'talent|1': 1.05, 'talent|2': 0.9, 'offboard|1': -1, 'offboard|2': -2, 'taken|0': -0.6,
+    'taken|1': -0.6, 'taken|2': -0.8, 'scarce|0': -0.5, 'scarce|1': -0.4, 'scarce|2': -0.2, 'need|exp_now|0': 0.15,
+    'need|snap|0': -0.2, 'need|ped|0': -0.15, 'qb|prod|early': -0.3, 'pos|K|0': -6, 'pos|P|0': -6, 'pos|LS|0': -8,
+    'pos|K|1': -3, 'pos|P|1': -3, 'pos|LS|1': -5, 'pos|LS|2': -1.5, 'ath': 0.3 },
+  noise: TUNING.noise,
+};
 
-// Each team's own board: the shared board value with its own noise.
-function teamBoards(prospects, teamIds, r) {
-  const boards = {};
-  for (const t of teamIds) {
-    const b = new Float64Array(prospects.length);
-    for (let i = 0; i < prospects.length; i++) {
-      b[i] = 3000 * Math.pow(prospects[i].board_value / 3000, TUNING.gradeSpread) * Math.exp(TUNING.boardNoise * r.normal());
-    }
-    boards[t] = b;
-  }
-  return boards;
-}
-
-export function newDraft({ prospects, teams, chart, seed = 1, allDeclare = false, trades = true, userTeams = [] }) {
+// noise: false gives the AI's single most likely draft (no random views, no day noise, no trades).
+export function newDraft({ prospects, teams, chart, model = DEFAULT_MODEL, market = null, seed = 1, allDeclare = false,
+  trades = true, userTeams = [], combineDone = false, year = null, noise = true }) {
   const r = rng(seed);
   const value = makeValue(chart);
   const teamIds = Object.keys(teams.teams);
   const declared = prospects.map(p => allDeclare || r() < p.p_declare);
+  const C = compile(model);
+  const P = prospects.map(p => playerFacts(p, { combineDone }));
+  const T = Object.fromEntries(teamIds.map(t => [t, teamFacts(teams.teams[t], model)]));
+  const nz = { ...TUNING.noise, ...(model.noise ?? {}) };
+  const tr = { ...TUNING.trades, ...(model.trades ?? {}) };
+  // Noise layers, each a share of the logit's spread (a standard Gumbel has variance pi^2/6).
+  const G2 = Math.PI ** 2 / 6;
+  const on = noise ? 1 : 0;
+  const sdS = on * Math.sqrt(nz.shared * G2), sdT = on * Math.sqrt(nz.team * G2);
+  const scE = Math.sqrt(Math.max(0.05, 1 - nz.shared - nz.team));
+  const shared = new Float64Array(P.length);
+  for (let i = 0; i < P.length; i++) shared[i] = sdS * (1 + nz.varianceScale * P[i].variance) * r.t(nz.tail);
+  const own = {};
+  for (const t of teamIds) {
+    const a = new Float64Array(P.length);
+    for (let i = 0; i < P.length; i++) a[i] = sdT * (1 + nz.varianceScale * P[i].variance) * r.normal();
+    own[t] = a;
+  }
+  const charts = makeCharts(market, teams, value);
   const state = {
-    r, value, prospects, teams, teamIds, declared, trades, userTeams: new Set(userTeams),
-    picks: buildPicks(teams), next: 0, taken: new Map(), // prospect index -> pick index
-    needs: Object.fromEntries(teamIds.map(t => [t, needMap(teams.teams[t])])),
-    boards: teamBoards(prospects, teamIds, r), tradeLog: [], tradesThisRound: 0, round: 1,
-    avgTradeRate: teamIds.reduce((a, t) => a + teams.teams[t].habits.draft_trades_per_year, 0) / teamIds.length || 1,
-    ordered: prospects.map((_, i) => i).sort((a, b) => prospects[b].board_value - prospects[a].board_value),
+    r, value, prospects, teams, teamIds, declared, userTeams: new Set(userTeams),
+    picks: buildPicks(teams), next: 0, taken: new Map(), C, P, T, shared, own, scE, dayNoise: on, tuning: tr, charts,
+    utilityFn: utility, baseFn: baseUtility, base: {},
+    dynW: [0, 1, 2].map(b => ({ taken: C.w[C.idx[`taken|${b}`]], run: C.w[C.idx[`run|${b}`]], scarce: C.w[C.idx[`scarce|${b}`]] })),
+    teamTaken: Object.fromEntries(teamIds.map(t => [t, {}])), recent: [], tradeLog: [], tradesThisRound: 0, round: 1,
+    future: Object.fromEntries(teamIds.map(t => [t, (teams.teams[t].future_picks ?? []).map(f => ({ ...f, owner: t }))])),
+    year: year ?? teams.draft_year ?? 2027, trades: trades && noise, firm: {}, clock: { pick: -1, used: 0 }, calls: [], callLog: [],
+    ordered: prospects.map((_, i) => i).sort((a, b) => P[b].talent - P[a].talent || prospects[b].board_value - prospects[a].board_value),
   };
+  state.avgTradeRate = teamIds.reduce((a, t) => a + (teams.teams[t].habits?.draft_trades_per_year ?? 1), 0) / teamIds.length || 1;
   return state;
 }
 
@@ -108,34 +153,52 @@ export function available(state) {
   return state.ordered.filter(i => state.declared[i] && !state.taken.has(i));
 }
 
-function score(state, team, i, round, recentGroups) {
-  const p = state.prospects[i];
-  const t = state.teams.teams[team];
-  const need = state.needs[team][p.group] ?? 0;
-  let pv = TUNING.posValue[p.group] ?? 1;
-  if (p.group === 'QB' && need < 0.5) pv = TUNING.qbWithoutNeed;
-  const habit = t.habits.pos_mult[p.group] ?? 1;
-  const nw = TUNING.needWeight[round - 1] ?? 0.5;
-  let s = state.boards[team][i] * pv * habit * (1 + nw * need);
-  if (need > 0.5 && recentGroups.filter(g => g === p.group).length >= 2) s *= TUNING.runBonus;
-  return s;
-}
-
-function recent(state) {
+// The players a pick considers, with each one's rank within his group among the players still available.
+export function candidates(state) {
   const out = [];
-  for (let k = Math.max(0, state.next - 6); k < state.next; k++) {
-    const i = state.picks[k].player;
-    if (i != null) out.push(state.prospects[i].group);
+  const seen = {};
+  let n = 0;
+  for (const i of state.ordered) {
+    if (!state.declared[i] || state.taken.has(i)) continue;
+    const g = state.P[i].group;
+    seen[g] = (seen[g] ?? 0) + 1;
+    if (n < TUNING.candidates || seen[g] <= TUNING.perGroup) out.push({ i, gr: seen[g] });
+    n++;
   }
   return out;
 }
 
-// Ranked choices for a team at this pick.
+const fbuf = [];
+// A team's utility for player i at the current pick, without the day's noise. The part that doesn't change during
+// the draft (everything but runs, scarcity and what the team already took) is cached per team, player and round
+// slot (model.js slotOf), so a whole draft stays fast.
+export function baseUtility(state, team, i, s) {
+  let base = state.base[team];
+  if (!base) { base = state.base[team] = new Float64Array(state.P.length * 4).fill(NaN); }
+  let u = base[i * 4 + s];
+  if (Number.isNaN(u)) {
+    const f = features(state.C, state.T[team], state.P[i], { round: SLOT_ROUND[s], taken: 0, run: 0, groupRank: 1 }, fbuf);
+    u = base[i * 4 + s] = dot(state.C.w, f) + state.shared[i] + state.own[team][i];
+  }
+  return u;
+}
+
+export function utility(state, team, i, round, groupRank, extraTaken = null) {
+  const b = bucketOf(round);
+  const P = state.P[i];
+  const u = baseUtility(state, team, i, slotOf(round));
+  const tk = (extraTaken ?? state.teamTaken[team])[P.group] ?? 0;
+  let run = 0;
+  for (const g of state.recent) if (g === P.group) run++;
+  const W = state.dynW[b];
+  return u + W.taken * tk + W.run * Math.min(4, run) + W.scarce * Math.log(groupRank);
+}
+
+// Ranked choices for a team at this pick (no day noise): [{ i, s }], s = utility.
 export function choices(state, team, n = 10) {
   const pick = state.picks[state.next];
-  const rg = recent(state);
-  const avail = available(state).slice(0, TUNING.candidates);
-  return avail.map(i => ({ i, s: score(state, team, i, pick.round, rg) }))
+  if (!pick) return [];
+  return candidates(state).map(({ i, gr }) => ({ i, s: utility(state, team, i, pick.round, gr) }))
     .sort((a, b) => b.s - a.s).slice(0, n);
 }
 
@@ -143,135 +206,42 @@ function aiChoose(state, team) {
   const pick = state.picks[state.next];
   // A team that just traded up takes the player it moved up for.
   if (pick.target != null && !state.taken.has(pick.target) && state.declared[pick.target]) return pick.target;
-  const list = choices(state, team, 8).map(c => ({ ...c, s: c.s * Math.exp(TUNING.pickNoise * state.r.normal()) }))
-    .sort((a, b) => b.s - a.s);
-  if (!list.length) return null;
-  const reach = TUNING.reachChance[pick.round - 1] ?? 0.15;
-  if (list.length > 2 && state.r() < reach) {
-    // A reach: one of the next few names on his board.
-    return list[1 + Math.floor(state.r() * Math.min(3, list.length - 1))].i;
+  let best = null, bs = -Infinity;
+  for (const { i, gr } of candidates(state)) {
+    const s = utility(state, team, i, pick.round, gr) + (state.dayNoise ? state.scE * state.r.gumbel() : 0);
+    if (s > bs) { bs = s; best = i; }
   }
-  return list[0].i;
+  return best;
 }
 
 export function makePick(state, i, how = 'ai') {
   const pick = state.picks[state.next];
-  const p = state.prospects[i];
+  const p = state.P[i];
   pick.player = i;
   pick.how = how;
   state.taken.set(i, state.next);
-  const nd = state.needs[pick.owner];
-  if (nd[p.group] != null) nd[p.group] *= TUNING.needAfterPick;
-  if (p.group === 'QB') nd.QB = Math.min(nd.QB ?? 0, 0.05);
+  const tk = state.teamTaken[pick.owner];
+  tk[p.group] = (tk[p.group] ?? 0) + 1;
+  state.recent.push(p.group);
+  if (state.recent.length > 8) state.recent.shift();
   state.next++;
+  state.calls = [];
   const nr = state.picks[state.next]?.round;
   if (nr && nr !== state.round) { state.round = nr; state.tradesThisRound = 0; }
 }
 
-// Value of a set of picks on the chart; future-year picks would count a round lower (not used tonight).
-function pickValue(state, idxs) {
-  return idxs.reduce((s, k) => s + state.value(state.picks[k].overall), 0);
-}
-
-// Picks a team still owns after `from`, in order.
-function ownedPicks(state, team, from) {
-  const out = [];
-  for (let k = from; k < state.picks.length; k++) if (state.picks[k].owner === team && state.picks[k].player == null) out.push(k);
-  return out;
-}
-
-// Can `buyer` pay for pick `k` with its picks? Returns the package or null.
-function package_(state, buyer, k, premium) {
-  const target = state.value(state.picks[k].overall) * premium;
-  const own = ownedPicks(state, buyer, k + 1);
-  if (!own.length) return null;
-  const pkg = [own[0]];
-  let v = pickValue(state, pkg);
-  for (let j = 1; j < own.length && v < target; j++) {
-    pkg.push(own[j]);
-    v += state.value(state.picks[own[j]].overall);
-  }
-  return v >= target ? pkg : null;
-}
-
-function swap(state, k, seller, buyer, pkg, note) {
-  state.picks[k].owner = buyer;
-  for (const j of pkg) state.picks[j].owner = seller;
-  state.tradeLog.push({ at: state.picks[k].overall, round: state.picks[k].round, buyer, seller,
-    got: [state.picks[k].overall], gave: pkg.map(j => state.picks[j].overall), note });
-  state.tradesThisRound++;
-}
-
-// An AI team behind the current pick may trade up for a player it rates far above its other options.
-function tryTradeUp(state) {
-  const k = state.next;
-  const pick = state.picks[k];
-  if (!state.trades || pick.round > TUNING.tradeRounds || state.tradesThisRound >= TUNING.maxTradesPerRound) return;
-  const seller = pick.owner;
-  if (state.userTeams.has(seller)) return;
-  const sellerTop = choices(state, seller, 3);
-  if (sellerTop.length < 2) return;
-  // The seller is happy to move down when its top two are close.
-  const sellerGap = (sellerTop[0].s - sellerTop[1].s) / sellerTop[0].s;
-  if (sellerGap > 0.12) return;
-  // Find the team behind with the strongest reason to move up, then roll once for this pick.
-  const seen = new Set([seller]);
-  let best = null;
-  for (let j = k + 1; j < Math.min(state.picks.length, k + 1 + TUNING.tradeLookahead); j++) {
-    const buyer = state.picks[j].owner;
-    if (seen.has(buyer) || state.userTeams.has(buyer)) continue;
-    seen.add(buyer);
-    const top = choices(state, buyer, 6);
-    if (top.length < 5) continue;
-    const target = top[0];
-    // What it expects to get at its own pick: about its (picks in between)th choice, capped.
-    const between = Math.min(5, j - k);
-    const fallback = top[Math.min(top.length - 1, between)];
-    const urgency = (target.s - fallback.s) / target.s;
-    const qb = state.prospects[target.i].group === 'QB' && (state.needs[buyer].QB ?? 0) > 0.6;
-    const bar = TUNING.tradeUrgency * (qb ? 0.6 : 1);
-    if (urgency < bar) continue;
-    const score = urgency / bar;
-    if (!best || score > best.score) best = { buyer, target, qb, score };
-  }
-  if (!best) return;
-  const rate = state.teams.teams[best.buyer].habits.draft_trades_per_year / state.avgTradeRate;
-  const chance = TUNING.tradeChance * Math.max(0.3, Math.min(2, rate)) * (best.qb ? 1.5 : 1);
-  if (state.r() > chance) return;
-  const pkg = package_(state, best.buyer, k, TUNING.tradePremium);
-  if (!pkg) return;
-  swap(state, k, seller, best.buyer, pkg, `${best.buyer} moves up for ${state.prospects[best.target.i].name}`);
-  pick.target = best.target.i;
-}
-
-// The user offers a trade. The AI side accepts when it gets enough chart value, plus more if it
-// loves the player it would give up the chance at. Returns { ok, reason }.
-export function proposeTrade(state, user, give, get) {
-  const other = new Set(get.map(k => state.picks[k].owner));
-  if (other.size !== 1) return { ok: false, reason: 'Ask for picks from one team at a time.' };
-  const partner = [...other][0];
-  if (give.some(k => state.picks[k].owner !== user)) return { ok: false, reason: 'You can only give your own picks.' };
-  if ([...give, ...get].some(k => state.picks[k].player != null)) return { ok: false, reason: 'Those picks are used.' };
-  const vGive = pickValue(state, give), vGet = pickValue(state, get);
-  let premium = TUNING.tradePremium;
-  if (get.includes(state.next)) {
-    const top = choices(state, partner, 3);
-    if (top.length > 1) premium += Math.max(0, (top[0].s - top[1].s) / top[0].s);
-  }
-  if (vGive >= vGet * premium) {
-    for (const k of get) state.picks[k].owner = user;
-    for (const k of give) state.picks[k].owner = partner;
-    state.tradeLog.push({ at: Math.min(...get.map(k => state.picks[k].overall)), buyer: user, seller: partner,
-      got: get.map(k => state.picks[k].overall), gave: give.map(k => state.picks[k].overall), note: 'your trade' });
-    return { ok: true, reason: `${partner} accepts: ${Math.round(vGive)} points for ${Math.round(vGet)}.` };
-  }
-  return { ok: false, reason: `${partner} wants about ${Math.round(vGet * premium)} points; you offered ${Math.round(vGive)}.` };
-}
-
-// Run AI picks until a user team is on the clock or the draft ends.
+// Run AI picks until a user team is on the clock, an AI team calls a user team, or the draft ends.
 export function advance(state, { stopAtUser = true, until = Infinity } = {}) {
   while (state.next < state.picks.length && state.next < until) {
-    tryTradeUp(state);
+    const k = state.next;
+    if (state.trades && state.marketChecked !== k) {
+      state.marketChecked = k;
+      tryMarket(state);
+      if (stopAtUser && state.userTeams.size) {
+        const calls = makeCalls(state);
+        if (calls.length) { state.calls = calls; return 'call'; }
+      }
+    }
     const team = state.picks[state.next].owner;
     if (stopAtUser && state.userTeams.has(team)) return 'user';
     const i = aiChoose(state, team);
@@ -279,6 +249,36 @@ export function advance(state, { stopAtUser = true, until = Infinity } = {}) {
     makePick(state, i);
   }
   return state.next >= state.picks.length ? 'done' : 'paused';
+}
+
+// Your offer: give and get are lists of assets, each a current pick index (number) or a future pick
+// { season, round, original, owner }. Returns { ok, decision, reason, counter } and makes the trade if accepted.
+export function proposeTrade(state, user, give, get) {
+  const res = evalOffer(state, user, give, get);
+  if (res.decision === 'accept') {
+    executeTrade(state, user, res.partner, give, get, 'your trade', { user: true });
+    return { ...res, ok: true };
+  }
+  return { ...res, ok: false };
+}
+
+export function evaluateOffer(state, user, give, get) {
+  return evalOffer(state, user, give, get);
+}
+
+// Accept an incoming call: the AI's offer as it stands.
+export function acceptCall(state, call) {
+  state.calls = state.calls.filter(c => c !== call);
+  if (!callStillGood(state, call)) { state.callLog.push({ ...call, answer: 'expired' }); return false; }
+  executeTrade(state, call.user, call.team, call.userGives, call.userGets, call.note, { user: true });
+  if (call.kind === 'buy' && call.target != null) state.picks[call.at].target = call.target;
+  state.callLog.push({ ...call, answer: 'accepted' });
+  return true;
+}
+
+export function declineCall(state, call) {
+  state.callLog.push({ ...call, answer: 'declined' });
+  state.calls = state.calls.filter(c => c !== call);
 }
 
 // Undrafted free agents: each team signs a few of the best left, by its own board and need.
@@ -289,10 +289,10 @@ export function udfaRush(state, perTeam = 3, top = 60) {
   const taken = new Set();
   for (let round = 0; round < perTeam; round++) {
     for (const t of order) {
-      let best = null, bs = -1;
+      let best = null, bs = -Infinity;
       for (const i of left) {
         if (taken.has(i)) continue;
-        const s = state.boards[t][i] * (1 + 0.5 * (state.needs[t][state.prospects[i].group] ?? 0));
+        const s = utility(state, t, i, 7, 1);
         if (s > bs) { bs = s; best = i; }
       }
       if (best != null) { taken.add(best); signed.push({ team: t, i: best }); }
@@ -301,7 +301,6 @@ export function udfaRush(state, perTeam = 3, top = 60) {
   return signed;
 }
 
-// Class grade: value of players taken against the value of the picks spent, plus needs filled.
 // Rank of each declared player in this draft's class (board ranks include players who stayed in school).
 export function classRanks(state) {
   const m = new Map();
@@ -309,6 +308,7 @@ export function classRanks(state) {
   return m;
 }
 
+// Class grade: value of players taken against the value of the picks spent, ranked against the other classes.
 export function classGrades(state) {
   const rank = classRanks(state);
   const out = {};
@@ -334,13 +334,29 @@ export function classGrades(state) {
   return out;
 }
 
+// Why a team took a player: the parts of its score that stood out, in plain words.
+export function explainPick(state, k) {
+  const pick = state.picks[k];
+  if (pick?.player == null) return [];
+  const i = pick.player, team = pick.owner, P = state.P[i], T = state.T[team];
+  const out = [];
+  const nd = T.need[P.group];
+  if (nd && (nd[5] > 0.8 || nd[2] < -0.8 || nd[8] > 0.8)) out.push(`need at ${P.group}`);
+  if (state.shared[i] + state.own[team][i] > 0.8) out.push('graded him above the public board');
+  if (P.athletic > 1) out.push('elite testing');
+  if (P.sb) out.push('Senior Bowl');
+  if ((T.gmPos[P.group] ?? 0) > 0.1) out.push(`this GM drafts ${P.group}s early`);
+  if (pick.target === i) out.push('traded up for him');
+  return out;
+}
+
 // Many drafts: landing ranges per prospect and likely picks per team.
-export function simulate({ prospects, teams, chart, n = 200, seed = 7, allDeclare = false, trades = true, onProgress }) {
+export function simulate({ prospects, teams, chart, model, market, n = 200, seed = 7, allDeclare = false, trades = true, onProgress }) {
   const res = prospects.map(() => ({ picks: [], teams: {} }));
   const firstPick = {};
   let tradeCount = 0;
   for (let s = 0; s < n; s++) {
-    const st = newDraft({ prospects, teams, chart, seed: seed + s * 7919, allDeclare, trades });
+    const st = newDraft({ prospects, teams, chart, model, market, seed: seed + s * 7919, allDeclare, trades });
     advance(st, { stopAtUser: false });
     tradeCount += st.tradeLog.filter(t => t.round === 1).length;
     const seen = new Set();
@@ -367,3 +383,5 @@ export function simulate({ prospects, teams, chart, n = 200, seed = 7, allDeclar
   });
   return { n, summary, firstPick, round1TradesPerDraft: tradeCount / n };
 }
+
+export { GROUPS, bucketOf, futureValue, CLOCK };

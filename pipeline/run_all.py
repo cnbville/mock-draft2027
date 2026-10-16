@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-STEPS = ["college.py", "players.py", "model.py", "nfl.py", "build_app.py"]
+STEPS = ["college.py", "players.py", "model.py", "nfl.py", "build_app.py", "trade_history.py", "ai_inputs.py"]
 
 for s in STEPS:
     print(f"== {s}", file=sys.stderr)

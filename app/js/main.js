@@ -7,7 +7,8 @@ import { mockView } from './views/mock.js';
 import { simsView } from './views/sims.js';
 import { aboutView } from './views/about.js';
 
-const FILES = ['prospects', 'teams', 'value_chart', 'hit_rates', 'combine_pct', 'meta', 'model_report'];
+const FILES = ['prospects', 'teams', 'value_chart', 'hit_rates', 'combine_pct', 'meta', 'model_report', 'ai_model',
+  'trade_market'];
 
 async function load() {
   const out = {};

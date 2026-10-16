@@ -1,0 +1,181 @@
+{
+ "source": "nflverse trades 2011-2025, draft weekends only (computed)",
+ "market_chart": {
+  "a": 0.079023,
+  "b": 0.784641,
+  "future_factor": 0.4671,
+  "fit_trades": 353,
+  "median_ratio": 1.0029,
+  "p10_ratio": 0.9122,
+  "p90_ratio": 1.1443,
+  "mean_abs_log_err": 0.0759
+ },
+ "shapes_2018_2023": {
+  "trades": 36.0,
+  "with_current_picks": 35.67,
+  "r1": 5.83,
+  "r2": 7.5,
+  "r3": 6.5,
+  "r4_7": 15.83,
+  "with_future": 7.83,
+  "future_only": 0.33,
+  "with_players": 2.67,
+  "down_adds_pick": 7.83,
+  "slots_moved_median": 9.0,
+  "slots_moved_p90": 29.099999999999994,
+  "slots_moved_max": 100
+ },
+ "shapes_2024_2025": {
+  "trades": 32.0,
+  "with_current_picks": 31.5,
+  "r1": 4.5,
+  "r2": 6.5,
+  "r3": 5.5,
+  "r4_7": 15.0,
+  "with_future": 9.0,
+  "future_only": 0.5,
+  "with_players": 0.5,
+  "down_adds_pick": 10.5,
+  "slots_moved_median": 10.0,
+  "slots_moved_p90": 29.1,
+  "slots_moved_max": 63
+ },
+ "per_draft": [
+  {
+   "year": 2018,
+   "trades": 39,
+   "with_current_picks": 38,
+   "r1": 7,
+   "r2": 8,
+   "r3": 8,
+   "r4_7": 15,
+   "with_future": 5,
+   "future_only": 1,
+   "with_players": 4,
+   "down_adds_pick": 8,
+   "slots_moved": {
+    "median": 10.0,
+    "max": 54
+   }
+  },
+  {
+   "year": 2019,
+   "trades": 40,
+   "with_current_picks": 40,
+   "r1": 6,
+   "r2": 10,
+   "r3": 8,
+   "r4_7": 16,
+   "with_future": 6,
+   "future_only": 0,
+   "with_players": 3,
+   "down_adds_pick": 8,
+   "slots_moved": {
+    "median": 9.0,
+    "max": 64
+   }
+  },
+  {
+   "year": 2020,
+   "trades": 29,
+   "with_current_picks": 29,
+   "r1": 4,
+   "r2": 4,
+   "r3": 5,
+   "r4_7": 16,
+   "with_future": 10,
+   "future_only": 0,
+   "with_players": 4,
+   "down_adds_pick": 7,
+   "slots_moved": {
+    "median": 11.0,
+    "max": 30
+   }
+  },
+  {
+   "year": 2021,
+   "trades": 28,
+   "with_current_picks": 28,
+   "r1": 3,
+   "r2": 6,
+   "r3": 6,
+   "r4_7": 13,
+   "with_future": 7,
+   "future_only": 0,
+   "with_players": 0,
+   "down_adds_pick": 10,
+   "slots_moved": {
+    "median": 9.0,
+    "max": 40
+   }
+  },
+  {
+   "year": 2022,
+   "trades": 37,
+   "with_current_picks": 36,
+   "r1": 9,
+   "r2": 8,
+   "r3": 4,
+   "r4_7": 15,
+   "with_future": 5,
+   "future_only": 1,
+   "with_players": 3,
+   "down_adds_pick": 8,
+   "slots_moved": {
+    "median": 9.0,
+    "max": 83
+   }
+  },
+  {
+   "year": 2023,
+   "trades": 43,
+   "with_current_picks": 43,
+   "r1": 6,
+   "r2": 9,
+   "r3": 8,
+   "r4_7": 20,
+   "with_future": 14,
+   "future_only": 0,
+   "with_players": 2,
+   "down_adds_pick": 6,
+   "slots_moved": {
+    "median": 8.0,
+    "max": 100
+   }
+  },
+  {
+   "year": 2024,
+   "trades": 29,
+   "with_current_picks": 28,
+   "r1": 5,
+   "r2": 7,
+   "r3": 4,
+   "r4_7": 12,
+   "with_future": 8,
+   "future_only": 1,
+   "with_players": 0,
+   "down_adds_pick": 9,
+   "slots_moved": {
+    "median": 7.0,
+    "max": 44
+   }
+  },
+  {
+   "year": 2025,
+   "trades": 35,
+   "with_current_picks": 35,
+   "r1": 4,
+   "r2": 6,
+   "r3": 7,
+   "r4_7": 18,
+   "with_future": 10,
+   "future_only": 0,
+   "with_players": 1,
+   "down_adds_pick": 12,
+   "slots_moved": {
+    "median": 11.0,
+    "max": 63
+   }
+  }
+ ]
+}

@@ -12,7 +12,7 @@ export function runSims(D, { n = 200, allDeclare = false, trades = true } = {}) 
     let done = 0;
     const step = () => {
       const k = Math.min(chunk, n - done);
-      parts.push(simulate({ prospects: D.prospects, teams: D.teams, chart: D.value_chart, n: k, seed: 7 + done * 104729, allDeclare, trades }));
+      parts.push(simulate({ prospects: D.prospects, teams: D.teams, chart: D.value_chart, model: D.ai_model, market: D.trade_market, n: k, seed: 7 + done * 104729, allDeclare, trades }));
       done += k;
       shared.listeners.forEach(f => f({ progress: done / n }));
       if (done < n) setTimeout(step, 0);
