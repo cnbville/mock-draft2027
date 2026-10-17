@@ -336,8 +336,9 @@ def main():
             "p_declare": r.p_declare, "size_pct": size, "traits": trait_rows(r), "comps": comps(r),
             "flags": flags(r, line), "seasons": line,
         })
-    meta = {"built": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M"), "boards": BOARDS, "pool_size": len(out),
-            "unmatched_board_players": unmatched, "groups": GROUPS,
+    # "schema" is the shape of the app data; the Mac app only uses a downloaded data set with its own schema.
+    meta = {"schema": 1, "built": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M"), "boards": BOARDS,
+            "pool_size": len(out), "unmatched_board_players": unmatched, "groups": GROUPS,
             "traits": {g: [t[0] for t in v] for g, v in TRAITS.items()}}
     (APP_DATA / "prospects.json").write_text(json.dumps(out, separators=(",", ":")))
     (APP_DATA / "combine_pct.json").write_text(json.dumps(pcts))

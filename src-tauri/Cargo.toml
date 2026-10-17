@@ -1,0 +1,36 @@
+[package]
+name = "mock-draft-2027"
+version = "0.2.0"
+description = "Mock Draft 2027: a front-office draft room for the real 2027 NFL draft (Mac app shell)."
+authors = ["Raichel (cnbville)"]
+edition = "2024"
+publish = false
+
+[lib]
+# The `_lib` suffix keeps the library name apart from the binary name (Tauri v2 layout).
+# Desktop only, so an rlib is enough (the mobile template adds staticlib and cdylib).
+name = "mock_draft_2027_lib"
+crate-type = ["rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+tauri = { version = "2.12", features = [] }
+tauri-plugin-dialog = "2.8"
+# Image downloads for the img:// scheme. rustls only (no native-tls / OpenSSL), with the
+# ring crypto provider (smaller and quicker to build than aws-lc). Certificates are checked
+# against the system trust store (rustls-platform-verifier, inside reqwest).
+reqwest = { version = "0.13", default-features = false, features = ["rustls-no-provider", "http2", "system-proxy"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+tokio = { version = "1", features = ["fs", "sync"] }
+sha2 = "0.10"
+base64 = "0.22"
+percent-encoding = "2"
+
+[profile.release]
+# Small, fast app (Tauri's size guide).
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

@@ -3,3 +3,6 @@ build
 __pycache__/
 node_modules/
 *.pyc
+# Tauri (Mac app): build output and generated capability schemas
+src-tauri/target/
+src-tauri/gen/schemas/

@@ -1,11 +1,17 @@
 {
   "name": "mock-draft2027",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "A front-office draft room for the real 2027 NFL draft.",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "tauri": "tauri",
+    "app:dev": "tauri dev",
+    "app:build": "tauri build"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.3"
+  }
 }

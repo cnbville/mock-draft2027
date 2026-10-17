@@ -2,26 +2,83 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#07080b">
+<meta name="description" content="A front-office draft room for the real 2027 NFL draft.">
 <title>Mock Draft 2027</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2307080b'/%3E%3Ctext x='32' y='45' font-family='Arial Black,Arial' font-weight='900' font-size='34' text-anchor='middle' fill='none' stroke='%23f4f5f7' stroke-width='2.4'%3E27%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="fonts/Archivo-wdth-wght.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="css/showtime.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/board.css">
+<link rel="stylesheet" href="css/mine.css">
+<link rel="stylesheet" href="css/player.css">
+<link rel="stylesheet" href="css/draft.css">
+<link rel="stylesheet" href="css/teams.css">
+<link rel="stylesheet" href="css/sims.css">
+<link rel="stylesheet" href="css/about.css">
+<script>
+  // Mark the Mac app before the first paint, so the top bar leaves room for the window buttons.
+  (function () {
+    var d = document.documentElement;
+    if (window.__TAURI__) {
+      d.classList.add('app');
+      if (/Mac/i.test(navigator.platform || navigator.userAgent)) d.classList.add('app-mac');
+    }
+  })();
+</script>
 </head>
 <body>
-<header class="top">
-  <div class="brand">Mock Draft 2027 <span class="sub">draft room</span></div>
-  <nav id="nav">
-    <a href="#board">Big board</a>
-    <a href="#mine">My board</a>
-    <a href="#teams">Teams</a>
-    <a href="#mock">Mock draft</a>
-    <a href="#sims">Simulations</a>
-    <a href="#about">Model and data</a>
+<a class="skip" href="#view" onclick="event.preventDefault();document.getElementById('view').focus()">Skip to content</a>
+
+<header class="top" id="top" data-tauri-drag-region>
+  <a class="brand wide" href="#home" aria-label="Mock Draft 2027, Home">Mock Draft <span>2027</span></a>
+  <nav class="tabs" aria-label="Sections">
+    <a class="tab" href="#home" data-tab="home">Home</a>
+    <a class="tab" href="#mock" data-tab="mock">Mock Draft</a>
+    <a class="tab" href="#board" data-tab="board">Big Board</a>
+    <a class="tab" href="#mine" data-tab="mine">My Board</a>
+    <a class="tab" href="#teams" data-tab="teams">Teams</a>
+    <a class="tab" href="#sims" data-tab="sims">Simulations</a>
   </nav>
+  <div class="tools" data-tauri-drag-region>
+    <div class="search-slot">
+      <div class="search" id="search" role="search">
+        <button class="search-btn" id="searchBtn" type="button" aria-label="Search players and teams" tabindex="-1"></button>
+        <input id="q" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go"
+          aria-label="Search players and teams" role="combobox" aria-expanded="false" aria-controls="qres" aria-autocomplete="list">
+        <kbd class="search-key" aria-hidden="true">/</kbd>
+        <button class="search-cancel" id="searchCancel" type="button">Cancel</button>
+        <div class="qres" id="qres" role="listbox" aria-label="Search results" hidden></div>
+      </div>
+    </div>
+    <a class="datapill" id="datapill" href="#about" hidden><i aria-hidden="true"></i><span>Data</span></a>
+  </div>
 </header>
-<main id="view"><p class="muted">Loading data…</p></main>
-<footer class="foot muted" id="foot"></footer>
+
+<main id="view" tabindex="-1">
+  <div class="splash" aria-live="polite">
+    <p class="splash-brand wide">Mock Draft <span>2027</span></p>
+    <span class="splash-bar" aria-hidden="true"><i></i></span>
+    <p class="splash-note">Loading the draft class</p>
+  </div>
+</main>
+
+<footer class="foot wrap" id="foot" hidden></footer>
+
+<nav class="tabbar" id="tabbar" aria-label="Sections">
+  <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4z"/></svg>Home</a>
+  <a href="#mock" data-tab="mock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 13V9.5M10 3h4"/></svg>Draft</a>
+  <a href="#board" data-tab="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Board</a>
+  <a href="#mine" data-tab="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>My Board</a>
+  <a href="#teams" data-tab="teams"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/></svg>Teams</a>
+  <button type="button" id="moreBtn" data-tab="more" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>More</button>
+</nav>
+
+<div id="layer"></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

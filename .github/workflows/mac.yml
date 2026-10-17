@@ -1,0 +1,48 @@
+name: mac app
+# Builds the Mac app (.dmg, universal: Apple silicon + Intel) and keeps it as a
+# download on the run page for 30 days. Unsigned (ad-hoc), see docs/mac-app.md.
+on:
+  push:
+    paths:
+      - "app/**"
+      - "src-tauri/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/mac.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: mac-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - run: npm ci
+
+      - name: Build the app
+        run: npx tauri build --target universal-apple-darwin --bundles dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Mock-Draft-2027-mac
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+          retention-days: 30
+          if-no-files-found: error
