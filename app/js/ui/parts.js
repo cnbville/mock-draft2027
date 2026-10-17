@@ -68,7 +68,7 @@ export function shelf({ title, note = '', items = [], id = '', cls = '', link } 
 
 export function starBtn(id, name = 'this player') {
   const on = store.onBoard(id);
-  return h`<button type="button" class="star" data-star="${id}" aria-pressed="${on}" aria-label="${on ? `Remove ${name} from My Board` : `Add ${name} to My Board`}" title="${on ? 'On My Board' : 'Add to My Board'}">${icon('star')}</button>`;
+  return h`<button type="button" class="star" data-star="${id}" aria-pressed="${String(on)}" aria-label="${on ? `Remove ${name} from My Board` : `Add ${name} to My Board`}" title="${on ? 'On My Board' : 'Add to My Board'}">${icon('star')}</button>`;
 }
 
 export function playerRow(p, { num: n, sub, cols = [], star = true, href, numCls = '' } = {}) {

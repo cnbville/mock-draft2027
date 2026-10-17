@@ -1,1 +1,124 @@
-/* about screen: styles scoped under .v-about (owned by the about screen build). */
+/* Model and data (#about). Scoped under .v-about. Reading width (.page.narrow). Shared pieces (.surface, .panel,
+   .tiles, .obar, .olegend, .src, .pill) come from showtime.css. */
+.v-about{display:block;padding-bottom:40px}
+.v-about .note .src{margin-right:6px}
+.v-about h3{font-size:16px;font-weight:800;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 10px}
+.v-about h3 small{font-size:12px;font-weight:500;color:var(--fg3)}
+
+/* table of contents */
+.v-about .ab-toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.v-about .ab-toc a{padding:7px 14px;border-radius:var(--radius-full);border:1px solid var(--hair);font-size:13px;font-weight:600;color:var(--fg2);transition:background .18s, color .18s}
+.v-about .ab-toc a:hover{background:var(--fill-1);color:var(--fg)}
+
+/* sections */
+.v-about .ab-sec{margin-top:52px;display:grid;gap:16px;scroll-margin-top:calc(var(--top-h, 64px) + 24px)}
+.v-about .ab-sec > h2{font-size:clamp(24px, 2.6vw, 32px);font-weight:800;font-stretch:115%;letter-spacing:-.01em;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.v-about .ab-sec > h2 small{font-size:12px;font-weight:600}
+.v-about .ab-sec > .lede{margin-top:-6px}
+.v-about .ab-prose ul{list-style:none;display:grid;gap:10px}
+.v-about .ab-prose li{position:relative;padding-left:16px;color:var(--fg2);font-size:14.5px;line-height:1.5}
+.v-about .ab-prose li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--fg3)}
+.v-about .ab-prose li .src{margin-left:4px}
+.v-about .ab-short li::before{background:#ffcf6b}
+
+/* AUC bars */
+.v-about .ab-bars{display:grid;gap:8px}
+.v-about .ab-bar{display:grid;grid-template-columns:52px minmax(0,1fr) 48px 78px;align-items:center;gap:10px;font-size:13px}
+.v-about .ab-bar .pill{justify-self:start}
+.v-about .ab-bar .t,.v-about .ab-top .t{height:8px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}
+.v-about .ab-bar .t i,.v-about .ab-top .t i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg, rgba(64,156,255,.6), #409cff)}
+.v-about .ab-bar b{font-variant-numeric:tabular-nums;text-align:right}
+.v-about .ab-bar small{color:var(--fg3);font-size:12px;white-space:nowrap}
+.v-about .ab-top{display:grid;gap:14px}
+.v-about .ab-top > div{display:grid;gap:5px}
+.v-about .ab-top p{font-size:13px;color:var(--fg2)}
+.v-about .ab-top p b{font-size:16px;color:var(--fg);font-variant-numeric:tabular-nums}
+.v-about .ab-top .t i.b{background:linear-gradient(90deg, rgba(48,209,88,.6), #30d158)}
+
+/* value chart */
+.v-about .ab-chart{margin:0;display:grid;gap:10px}
+.v-about .ab-chart svg{width:100%;height:auto;display:block;touch-action:pan-y}
+.v-about .ab-chart path,.v-about .ab-chart line{vector-effect:non-scaling-stroke}
+.v-about .ab-chart .grid{stroke:var(--hair)}
+.v-about .ab-chart .rd{stroke:rgba(255,255,255,.08);stroke-dasharray:3 4}
+.v-about .ab-chart text{fill:var(--fg3);font-size:11px;font-variant-numeric:tabular-nums}
+.v-about .ab-chart .yl{text-anchor:end}
+.v-about .ab-chart .me{fill:none;stroke:#fff;stroke-width:2.5;stroke-linejoin:round}
+.v-about .ab-chart .jj{fill:none;stroke:var(--gold);stroke-width:2;stroke-dasharray:6 5}
+.v-about .ab-chart .hl{stroke:rgba(255,255,255,.4)}
+.v-about .ab-chart .hm{fill:#fff;stroke:var(--ground);stroke-width:2}
+.v-about .ab-chart .hj{fill:var(--gold);stroke:var(--ground);stroke-width:2}
+.v-about .ab-chart .hit{cursor:crosshair}
+.v-about .ab-chart figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 18px}
+.v-about .ab-legend{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--fg2)}
+.v-about .ab-legend li{display:inline-flex;align-items:center;gap:8px}
+.v-about .ab-legend i{display:inline-block;width:20px;height:0;border-top:2.5px solid #fff}
+.v-about .ab-legend i.jj{border-top:2px dashed var(--gold)}
+.v-about .ab-readout{min-height:1.4em;font-variant-numeric:tabular-nums}
+.v-about .ab-readout b{color:var(--fg)}
+
+/* hit rates */
+.v-about .ab-defs{display:grid;grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));gap:8px;margin:0}
+.v-about .ab-defs > div{padding:10px 12px;border-radius:var(--radius-md);background:var(--fill-1)}
+.v-about .ab-defs dt{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.v-about .ab-defs dt i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.v-about .ab-defs dd{margin:4px 0 0;font-size:12.5px;color:var(--fg2)}
+.v-about .ab-defs .o-bust{background:var(--o-bust)}
+.v-about .ab-defs .o-backup{background:var(--o-backup)}
+.v-about .ab-defs .o-starter{background:var(--o-starter)}
+.v-about .ab-defs .o-good_starter{background:var(--o-good_starter)}
+.v-about .ab-defs .o-pro_bowl{background:var(--o-pro_bowl)}
+.v-about .ab-hits{padding:8px 14px;display:grid}
+.v-about .ab-hrow{display:grid;grid-template-columns:76px 64px minmax(120px, 1fr) repeat(5, 74px);align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:14px;font-variant-numeric:tabular-nums}
+.v-about .ab-hrow:last-child{border-bottom:0}
+.v-about .ab-hrow > span:nth-child(2){color:var(--fg2);text-align:right}
+.v-about .ab-hrow .pc{text-align:right}
+.v-about .ab-hhead{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);padding-bottom:6px}
+.v-about .ab-hhead .pc{white-space:normal;line-height:1.2}
+
+/* boards */
+.v-about .ab-boards{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px}
+.v-about .ab-board{padding:16px;display:grid;gap:4px;align-content:start}
+.v-about .ab-board b{font-size:16px}
+.v-about .ab-board span{font-size:13px;color:var(--fg2)}
+.v-about .ab-board .src{margin-top:4px}
+
+/* settings */
+.v-about .ab-settings{padding:6px 16px}
+.v-about .ab-set{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 18px;padding:11px 0;border-bottom:1px solid var(--hair);font-size:14px}
+.v-about .ab-set:last-child{border-bottom:0}
+.v-about .ab-set > span:first-child{min-width:0}
+.v-about .ab-set code{display:block;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:11.5px;color:var(--fg3);margin-top:2px}
+.v-about .ab-set > b{font-variant-numeric:tabular-nums;font-size:16px;text-align:right}
+.v-about .ab-rounds{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px}
+.v-about .ab-rounds > span{display:inline-grid;justify-items:center;min-width:44px;padding:4px 6px;border-radius:8px;background:var(--fill-1);font-weight:700;font-variant-numeric:tabular-nums;font-size:13px}
+.v-about .ab-rounds small{font-size:10px;font-weight:600;color:var(--fg3)}
+
+/* sources */
+.v-about .ab-sources{padding:6px 16px}
+.v-about .ab-src{display:grid;grid-template-columns:200px minmax(0,1fr) 140px 90px;gap:6px 16px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--hair);font-size:13.5px}
+.v-about .ab-src:last-child{border-bottom:0}
+.v-about .ab-src > span{color:var(--fg2);overflow-wrap:anywhere}
+.v-about .ab-src .ab-when{font-variant-numeric:tabular-nums;color:var(--fg)}
+
+@media (max-width:860px){
+  .v-about .ab-hrow{grid-template-columns:64px 48px minmax(0,1fr);gap:10px}
+  .v-about .ab-hrow .pc{display:none}
+  .v-about .ab-src{grid-template-columns:minmax(0,1fr) auto}
+  .v-about .ab-src > span:nth-child(2){grid-column:1 / -1;grid-row:2}
+  .v-about .ab-src .ab-when{grid-row:3}
+  .v-about .ab-src .src{grid-row:3;justify-self:end}
+}
+@media (max-width:760px){
+  .v-about .tiles.fixed{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .v-about .ab-set{grid-template-columns:minmax(0,1fr)}
+  .v-about .ab-rounds{justify-content:flex-start}
+  .v-about .ab-set > b{text-align:left}
+  .v-about .ab-bar{grid-template-columns:48px minmax(0,1fr) 44px;gap:8px}
+  .v-about .ab-bar small{display:none}
+  .v-about .ab-chart text{font-size:21px}
+  .v-about .ab-rounds{gap:3px}
+  .v-about .ab-rounds > span{min-width:38px;padding:4px 2px}
+  .v-about .ab-hrow{grid-template-columns:62px 58px minmax(0,1fr)}
+  .v-about .ab-hhead{letter-spacing:.02em}
+}

@@ -1,1 +1,165 @@
-/* player screen: styles scoped under .v-player (owned by the player screen build). */
+/* player screen: styles scoped under .v-player (owned by the player screen build).
+   The hero (.sh-hero, .sh-photo, .sh-in) and body (.sh-body) come from showtime.css; this file adds the rest. */
+.v-player{display:block}
+.v-player .pl-missing{padding:60px 20px}
+
+/* hero */
+.v-player .pl-kick{display:flex;align-items:center;gap:12px}
+.v-player .pl-kick .label{color:rgba(255,255,255,.88)}
+.v-player .pl-kick .logo{background:rgba(255,255,255,.14);flex:none}
+.v-player .pl-sub{font-size:14px;color:rgba(255,255,255,.78);max-width:60ch}
+.v-player .sh-in .actions{margin-top:6px}
+.v-player .pl-star svg{width:18px;height:18px}
+.v-player .pl-star.on{background:var(--gold);color:#1a1400}
+.v-player .pl-star.on svg path{fill:currentColor}
+.v-player .pl-photo-note{font-size:13px;line-height:1.45;color:rgba(255,255,255,.8);max-width:46ch}
+
+/* section heads */
+.v-player .pl-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px;margin-bottom:12px}
+.v-player .pl-head h3{margin:0}
+.v-player .pl-head .note{font-size:13px}
+.v-player .pl-lede{margin:-4px 0 14px;max-width:80ch}
+.v-player .pl-after{margin-top:10px;max-width:90ch}
+.v-player .pl-sublabel{margin:18px 0 10px}
+.v-player .pl-two{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:34px 28px;align-items:start}
+.v-player .pl-two > *{min-width:0}
+.v-player .pl-card{padding:18px;border-radius:var(--radius-lg);background:var(--fill-1);display:grid;gap:14px;align-content:start}
+.v-player .pl-card .tiles > div{background:rgba(255,255,255,.05)}
+.v-player .pl-wait{justify-items:start}
+.v-player .pl-wait b{font-size:17px}
+.v-player .tiles .note{color:var(--fg3);font-size:11.5px}
+.v-player .tiles .src{font-size:10.5px}
+.v-player .pl-my{background:color-mix(in oklab, var(--gold) 12%, transparent) !important}
+
+/* landing range */
+.v-player .pl-range{padding:26px 4px 2px}
+.v-player .pl-track{position:relative;height:12px;border-radius:9px;background:rgba(255,255,255,.1)}
+.v-player .pl-track .rd{position:absolute;top:-4px;bottom:-4px;width:1px;background:rgba(255,255,255,.22)}
+.v-player .pl-band{position:absolute;top:0;bottom:0;border-radius:9px;min-width:6px;background:linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 60%, #fff))}
+.v-player .pl-mid{position:absolute;top:50%;width:18px;height:18px;margin-left:-9px;margin-top:-9px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.35)}
+.v-player .pl-mid b{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-stretch:68%;font-weight:800;font-size:20px;font-variant-numeric:tabular-nums}
+.v-player .pl-rounds{position:relative;height:18px;margin-top:8px;font-size:11px;color:var(--fg3);font-weight:700}
+.v-player .pl-rounds span{position:absolute;transform:translateX(-50%)}
+.v-player .pl-teams{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.v-player .pl-teams .label{width:100%}
+.v-player .pl-team{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:var(--radius-full);background:rgba(255,255,255,.07);font-size:14px;transition:background .18s}
+.v-player .pl-team:hover{background:rgba(255,255,255,.14)}
+.v-player .pl-team b{font-variant-numeric:tabular-nums}
+.v-player .pl-defs{display:grid;grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));gap:10px 22px;font-size:12px}
+.v-player .pl-defs dt{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--fg);font-size:13px}
+.v-player .pl-defs dt b{margin-left:auto;font-variant-numeric:tabular-nums}
+.v-player .pl-defs dt i{width:9px;height:9px;border-radius:3px;flex:none}
+.v-player .pl-defs dd{margin:2px 0 0 15px;color:var(--fg3)}
+
+/* size */
+.v-player .pl-size .meter{grid-template-columns:minmax(120px, 160px) 1fr 70px;font-size:14px}
+.v-player .pl-size .meter .t > i{background:linear-gradient(90deg, var(--accent), #fff)}
+
+/* traits and grades */
+.v-player .pl-traits{display:grid;gap:4px}
+.v-player .pl-trait{display:grid;grid-template-columns:minmax(150px, 1.1fr) minmax(120px, 1fr) auto;align-items:center;gap:10px 22px;padding:10px 12px;border-radius:var(--radius-md);transition:background .2s}
+.v-player .pl-trait:hover,.v-player .pl-trait:focus-within{background:var(--fill-1)}
+.v-player .pl-tl b{display:block;font-size:15px;font-weight:700}
+.v-player .pl-tl small{display:block;font-size:12px;color:var(--fg3)}
+.v-player .pl-tbar{display:grid;grid-template-columns:1fr 38px;align-items:center;gap:10px}
+.v-player .pl-tbar .t{position:relative;height:8px;border-radius:9px;background:rgba(255,255,255,.1)}
+.v-player .pl-tbar .t > i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg, var(--accent), #fff)}
+.v-player .pl-tbar .t > em{position:absolute;top:-5px;width:4px;height:18px;margin-left:-2px;border-radius:2px;background:var(--gold);box-shadow:0 0 0 2px rgba(0,0,0,.4)}
+.v-player .pl-tbar > b{text-align:right;font-variant-numeric:tabular-nums;font-size:15px}
+.v-player .pl-trait.film .pl-tbar .t{background:repeating-linear-gradient(90deg, rgba(255,255,255,.09) 0 6px, transparent 6px 12px)}
+.v-player .pl-trait.film .pl-tbar > b{color:var(--fg3);font-size:12px;font-weight:600}
+.v-player .pl-trait.film:not(.graded) .pl-tl b{color:var(--fg2)}
+.v-player .pl-grade{display:flex;gap:3px}
+.v-player .pl-grade button{width:26px;height:30px;border:0;padding:0;border-radius:7px;background:rgba(255,255,255,.06);color:var(--fg3);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;transition:background .15s, color .15s, transform .15s}
+.v-player .pl-grade button:hover{background:rgba(255,255,255,.16);color:var(--fg)}
+.v-player .pl-grade button.on{background:color-mix(in oklab, var(--gold) 34%, transparent);color:#fff3c4}
+.v-player .pl-grade button[aria-checked="true"]{background:var(--gold);color:#1a1400;transform:scale(1.08)}
+.v-player .pl-grade button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* tables */
+.v-player .pl-tbl th{background:var(--raised)}
+.v-player .pl-tbl td.l,.v-player .pl-tbl th.l{text-align:left}
+
+/* athletic testing */
+.v-player .pl-ath{grid-template-columns:minmax(220px, 300px) minmax(0,1fr);gap:22px 30px;align-items:center}
+.v-player .pl-score{display:flex;align-items:center;gap:18px}
+.v-player .pl-score > div{display:grid;gap:6px;justify-items:start}
+.v-player .pl-score b{font-size:17px}
+.v-player .pl-tests{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:14px}
+.v-player .pl-test{display:grid;gap:5px;font-size:13px;color:var(--fg2);min-width:0}
+.v-player .pl-in{position:relative;display:block}
+.v-player .pl-in .input{width:100%;padding-right:46px;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;background:rgba(0,0,0,.22)}
+.v-player .pl-in .input[aria-invalid="true"]{box-shadow:inset 0 0 0 2px var(--bad)}
+.v-player .pl-in i{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;font-size:12px;color:var(--fg3);pointer-events:none}
+.v-player .pl-test small{min-height:16px;font-size:12px;color:var(--good)}
+
+/* comparisons */
+.v-player .pl-comps{display:grid;grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));gap:10px}
+.v-player .pl-comp{padding:16px;border-radius:18px;background:var(--lift);display:grid;gap:10px;align-content:start;min-width:0}
+.v-player .pl-comp-h{display:flex;align-items:center;gap:10px;min-width:0}
+.v-player .pl-comp-h .logo{background:rgba(255,255,255,.06);flex:none}
+.v-player .pl-comp-h span{min-width:0}
+.v-player .pl-comp-h b{display:block;font-size:16px;line-height:1.2}
+.v-player .pl-comp-h small{display:block;font-size:12px;color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-player .pl-comp-d{font-size:12.5px;color:var(--fg2)}
+.v-player .pl-comp-k{display:flex;flex-wrap:wrap;gap:6px;font-size:12.5px;color:var(--fg2)}
+.v-player .pl-comp-k b{padding:1px 7px;border-radius:6px;background:color-mix(in oklab, var(--gold) 20%, transparent);color:#ffe9a3;font-size:12px}
+
+/* scouting notebook */
+.v-player .pl-book .pl-two{gap:18px}
+.v-player .pl-page{padding:20px 22px 22px;border-radius:var(--radius-lg);background:#f3eedf0d;box-shadow:inset 0 0 0 1px var(--hair);display:grid;gap:12px;align-content:start}
+.v-player .pl-page h4{font-size:15px;font-weight:700;display:flex;align-items:baseline;gap:10px;margin-top:6px}
+.v-player .pl-page h4:first-child{margin-top:0}
+.v-player .pl-flags{display:flex;flex-wrap:wrap;gap:8px}
+.v-player .pl-flag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--edge);background:transparent;color:var(--fg2);border-radius:var(--radius-full);padding:7px 14px;font-size:13px;font-weight:600;transition:background .18s, color .18s, border-color .18s}
+.v-player .pl-flag svg{width:14px;height:14px;display:none}
+.v-player .pl-flag:hover{background:var(--fill-1);color:var(--fg)}
+.v-player .pl-flag[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--on-fg)}
+.v-player .pl-flag[aria-pressed="true"]{padding-left:10px}
+.v-player .pl-flag[aria-pressed="true"] svg{display:block}
+.v-player .pl-flag.f-avoid[aria-pressed="true"],.v-player .pl-flag.f-medical[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.v-player .pl-flag.f-sleeper[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:#04210c}
+.v-player .pl-none{font-size:14px;color:var(--fg3);font-style:italic}
+.v-player .pl-reports{list-style:none;display:grid;gap:8px}
+.v-player .pl-reports li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:start;gap:10px;padding:10px 6px 10px 12px;border-radius:var(--radius-sm);background:rgba(255,255,255,.05)}
+.v-player .pl-reports .pill{margin-top:2px}
+.v-player .pl-rt b{display:block;font-weight:600;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.v-player .pl-rt small{font-size:12px;color:var(--fg3);overflow-wrap:anywhere}
+.v-player .pl-reports .icon-btn{width:32px;height:32px;margin-top:-4px}
+.v-player .pl-reports .icon-btn svg{width:16px;height:16px}
+.v-player .pl-repform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding-top:4px}
+.v-player .pl-repform .pl-wide{grid-column:1 / -1}
+.v-player .pl-repform .btn{justify-self:start}
+.v-player .pl-repform .input[type="date"]{color-scheme:dark}
+.v-player .pl-saved{font-size:12px;font-weight:500;color:var(--fg3)}
+.v-player .pl-lined{width:100%;min-height:300px;resize:vertical;border:0;border-radius:var(--radius-sm);padding:4px 14px 14px;color:var(--fg);font-size:15px;line-height:30px;
+  background:repeating-linear-gradient(transparent 0 29px, rgba(255,255,255,.09) 29px 30px) local, rgba(0,0,0,.18);background-position:0 3px;box-shadow:inset 0 0 0 1px var(--hair)}
+.v-player .pl-lined::placeholder{color:var(--fg3)}
+.v-player .pl-lined:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--fg)}
+
+@media (max-width:900px){
+  .v-player .pl-trait{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .v-player .pl-grade{grid-column:1 / -1}
+  .v-player .pl-ath{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .v-player .pl-two{grid-template-columns:minmax(0,1fr)}
+  .v-player .sh-in h2{font-size:clamp(36px, 11vw, 56px)}
+  .v-player .pl-trait{grid-template-columns:minmax(0,1fr);gap:8px;padding:12px 4px}
+  .v-player .pl-grade{display:grid;grid-template-columns:repeat(10, minmax(0,1fr))}
+  .v-player .pl-grade button{width:auto;height:34px}
+  .v-player .pl-tests{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .v-player .pl-size .meter{grid-template-columns:110px 1fr 64px;font-size:13px}
+  .v-player .pl-page{padding:16px}
+  .v-player .pl-repform{grid-template-columns:minmax(0,1fr)}
+  .v-player .pl-score{align-items:flex-start}
+}
+@media (prefers-reduced-motion: reduce){
+  .v-player .pl-grade button{transition:none}
+  .v-player .pl-grade button[aria-checked="true"]{transform:none}
+}
+@media (max-width:760px){
+  .v-player .pl-comps{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+  .v-player .pl-comps::-webkit-scrollbar{display:none}
+  .v-player .pl-comp{scroll-snap-align:start}
+}

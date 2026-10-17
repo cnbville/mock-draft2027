@@ -1,1 +1,72 @@
-/* board screen: styles scoped under .v-board (owned by the board screen build). */
+/* Big Board: mockup C glass rows with a filter bar. Scoped under .v-board. The rows reuse .prow from showtime.css. */
+
+.v-board{display:block;padding-bottom:56px}
+.v-board .bd-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:2px}
+.v-board .bd-legend .src{font-size:12px}
+
+/* ---------- filter bar ---------- */
+.v-board .bd-bar{display:grid;gap:12px;padding:14px 16px;border-radius:var(--radius-lg);z-index:5;background:rgba(20,22,29,.9)}
+.v-board .bd-row1{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;min-width:0}
+.v-board .bd-q{flex:1 1 240px;max-width:380px;min-width:0}
+.v-board .bd-sort{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.v-board .bd-lab{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}
+.v-board .bd-sort .select{max-width:230px}
+.v-board .bd-dir{height:40px;padding:0 14px}
+.v-board .bd-dir svg{width:14px;height:14px}
+.v-board .bd-ob{margin-left:auto;white-space:nowrap}
+.v-board .bd-chipslot{min-width:0}
+.v-board .bd-chips{margin:-2px}
+
+/* stays under the top bar while you scroll, where there's room for it */
+@media (min-width:761px) and (min-height:640px){
+  .v-board .bd-bar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--top-h) + 6px)}
+}
+
+/* ---------- count and simulations ---------- */
+.v-board .bd-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 18px;margin:18px 2px 12px}
+.v-board .bd-count{color:var(--fg2);font-size:14px}
+.v-board .bd-sims{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.v-board .bd-sims .src{font-size:13px;color:var(--fg2)}
+.v-board .bd-ring{display:inline-flex}
+.v-board .bd-ring[hidden]{display:none}
+
+/* ---------- rows ---------- */
+.v-board .bd-rows{gap:8px}
+.v-board .bd-r{content-visibility:auto;contain-intrinsic-size:auto 72px}
+.v-board .bd-r .cols{gap:10px}
+.v-board .bd-r .col{width:60px;flex:none}
+.v-board .bd-r .col.w{width:76px}
+.v-board .bd-r .col.n{width:40px}
+.v-board .bd-r .col.on{color:var(--fg);font-weight:700}
+.v-board .bd-r .star{margin-left:4px}
+.v-board .bd-flag{display:inline-flex;align-items:center;justify-content:flex-end;gap:3px;color:var(--gold)}
+.v-board .bd-flag svg{width:13px;height:13px}
+.v-board .bd-more{height:1px}
+.v-board .bd-rows .empty{border-radius:var(--radius-lg);background:rgba(255,255,255,.04)}
+
+/* columns by width: every column on a wide window, then fewer; the sorted column always stays */
+@media (max-width:1379px){ .v-board .bd-r .col.t-xl:not(.on){display:none} }
+@media (max-width:1099px){ .v-board .bd-r .col.t-lg:not(.on){display:none} }
+@media (max-width:760px){
+  .v-board .bd-r{grid-template-columns:40px 40px minmax(0,1fr) auto;gap:9px;padding:8px 6px 8px 4px}
+  .v-board .bd-r > .num{font-size:36px}
+  .v-board .bd-r > .num.small-num{font-size:27px}
+  .v-board .bd-r > .face{width:40px;height:40px}
+  .v-board .bd-r .who a{font-size:15px;font-stretch:100%}
+  .v-board .bd-r .who small{font-size:12px}
+  .v-board .bd-r .cols{gap:4px}
+  .v-board .bd-r .col:not(.ph){display:none}
+  .v-board .bd-r .col{width:auto;min-width:50px;font-size:11px}
+  .v-board .bd-r .star{margin-left:0}
+  .v-board .bd-bar{padding:12px;gap:10px}
+  .v-board .bd-row1{gap:8px}
+  .v-board .bd-q{flex-basis:100%;max-width:none}
+  .v-board .bd-lab,.v-board .bd-dir span{display:none}
+  .v-board .bd-dir{width:40px;padding:0}
+  .v-board .bd-sort{flex:1 1 0}
+  .v-board .bd-sort .select{flex:1;max-width:none;width:100%}
+  .v-board .bd-lvl{flex:1 1 0;min-width:0}
+  .v-board .bd-lvl .select{width:100%}
+  .v-board .bd-ob{margin-left:0;flex-basis:100%}
+  .v-board .bd-meta{margin-top:14px}
+}

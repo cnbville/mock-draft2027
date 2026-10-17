@@ -1,1 +1,110 @@
-/* sims screen: styles scoped under .v-sims (owned by the sims screen build). */
+/* Simulations (#sims). Scoped under .v-sims. Shared pieces (.ring, .seg, .chips, .check, .tiles, .prow, .logo)
+   come from showtime.css. */
+.v-sims{display:block;padding-bottom:40px}
+.v-sims .note .src{margin-right:8px}
+
+/* run panel */
+.v-sims .sm-run{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:28px;padding:24px 28px}
+.v-sims .sm-ring .ring > span{font-size:40px}
+.v-sims .sm-ring .ring > span small{font-size:12px;letter-spacing:.04em}
+.v-sims .sm-ring .ring.live .ring-val{stroke:#fff}
+.v-sims .sm-ring .ring.live .ring-track{animation:smPulse 1.6s ease-in-out infinite}
+@keyframes smPulse{50%{stroke:rgba(255,255,255,.3)}}
+@media (prefers-reduced-motion: reduce){.v-sims .sm-ring .ring.live .ring-track{animation:none}}
+.v-sims .sm-ring .ring.good .ring-val{stroke:var(--good)}
+.v-sims .sm-ctl{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:18px 30px}
+.v-sims .sm-field{display:grid;gap:8px}
+.v-sims .sm-field .seg{background:rgba(0,0,0,.25)}
+.v-sims .sm-checks{display:grid;gap:10px}
+.v-sims .sm-checks .check{color:var(--fg)}
+.v-sims .sm-go{display:grid;gap:8px;justify-items:end;text-align:right}
+.v-sims .sm-go .btn{min-width:170px}
+.v-sims .sm-status{max-width:36ch}
+
+/* sections */
+.v-sims .sm-sec{margin-top:34px;display:grid;gap:14px}
+.v-sims .sm-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 18px}
+.v-sims .sm-head h2{font-size:26px;font-weight:800;font-stretch:112%}
+.v-sims .sm-head .note{max-width:70ch}
+.v-sims .sm-empty{margin-top:34px}
+.v-sims .tiles > div{background:rgba(255,255,255,.07)}
+.v-sims .tiles .note{color:var(--fg3)}
+
+/* tools */
+.v-sims .sm-tools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.v-sims .sm-search{flex:1 1 260px;max-width:380px}
+.v-sims .sm-count{margin-top:-4px}
+
+/* rows: num, face, who, range, cols */
+.v-sims .sm-row,.v-sims .sm-axis{grid-template-columns:56px 52px minmax(150px, 1fr) minmax(220px, 1.5fr) 424px}
+.v-sims .sm-row{gap:16px}
+.v-sims .sm-row:hover{transform:none}
+.v-sims .sm-rng{display:grid;gap:5px;min-width:0}
+.v-sims .sm-trk{position:relative;height:10px;border-radius:9px;background:rgba(255,255,255,.08)}
+.v-sims .sm-trk i{position:absolute;top:0;bottom:0;border-radius:9px;background:linear-gradient(90deg, color-mix(in oklab, var(--accent) 50%, #fff), #fff)}
+.v-sims .sm-trk em{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ground);box-shadow:0 0 0 3px #fff}
+.v-sims .sm-rng small{font-size:12px;color:var(--fg2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-sims .sm-rng small b{color:var(--fg);font-weight:700}
+.v-sims .sm-row .cols{gap:18px;justify-content:flex-end}
+.v-sims .sm-row .col{min-width:56px}
+.v-sims .sm-teams{display:flex;gap:6px;min-width:198px}
+.v-sims .sm-team{display:grid;justify-items:center;gap:2px;width:62px;padding:4px 0;border-radius:var(--radius-sm);transition:background .2s}
+.v-sims .sm-team:hover{background:rgba(255,255,255,.1)}
+.v-sims .sm-team b{font-size:11px;font-weight:600;color:var(--fg2);font-variant-numeric:tabular-nums}
+.v-sims .sm-team .logo.img-ok{background:none;box-shadow:none}
+
+/* axis above the rows */
+.v-sims .sm-axis{display:grid;gap:16px;align-items:end;padding:0 18px 0 10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}
+.v-sims .sm-scale{position:relative;height:20px;border-bottom:1px solid var(--hair)}
+.v-sims .sm-scale i{position:absolute;bottom:0;height:8px;border-left:1px solid var(--edge)}
+.v-sims .sm-scale small{position:absolute;bottom:9px;left:-1px;font-size:10px;letter-spacing:.04em;white-space:nowrap;font-style:normal}
+.v-sims .sm-axis-rest{text-align:right;white-space:nowrap}
+.v-sims .sm-more{display:flex;justify-content:center;padding:14px 0 0}
+
+/* team cards */
+.v-sims .sm-tgrid{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:14px}
+.v-sims .sm-tc{position:relative;isolation:isolate;overflow:hidden;border-radius:var(--radius-xl);padding:14px;display:grid;gap:10px;align-content:start;background:linear-gradient(150deg, color-mix(in oklab, var(--accent) 32%, transparent), rgba(255,255,255,.04) 60%);box-shadow:inset 0 0 0 1px var(--hair)}
+.v-sims .sm-tc-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:2px 4px;border-radius:var(--radius-md)}
+.v-sims .sm-tc-head .logo.img-ok{background:none;box-shadow:none}
+.v-sims .sm-tc-head b{display:block;font-size:17px;font-weight:800;font-stretch:110%}
+.v-sims .sm-tc-head small{display:block;font-size:12px;color:var(--fg2)}
+.v-sims .sm-tc-head svg{width:16px;height:16px;color:var(--fg3)}
+.v-sims .sm-tc-head:hover svg{color:var(--fg)}
+.v-sims .sm-tc-list{list-style:none;display:grid;gap:4px}
+.v-sims .sm-tc-list a{display:grid;grid-template-columns:34px minmax(0,1fr) 64px;align-items:center;gap:10px;padding:6px;border-radius:var(--radius-sm);background:rgba(0,0,0,.2);transition:background .2s}
+.v-sims .sm-tc-list a:hover{background:rgba(255,255,255,.08)}
+.v-sims .sm-tc-list .face{width:34px;height:34px;background:linear-gradient(160deg, var(--accent), color-mix(in oklab, var(--accent) 30%, #000))}
+.v-sims .sm-tc-list b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-sims .sm-tc-list small{display:block;font-size:12px;color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-sims .sm-tc-p{display:grid;gap:4px;text-align:right}
+.v-sims .sm-tc-p b{font-variant-numeric:tabular-nums}
+.v-sims .sm-tc-p .t{height:4px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}
+.v-sims .sm-tc-p i{display:block;height:100%;margin-left:auto;border-radius:9px;background:#fff}
+
+@media (max-width:1180px){
+  .v-sims .sm-ctl{grid-template-columns:auto minmax(0,1fr)}
+  .v-sims .sm-go{grid-column:1 / -1;grid-template-columns:auto minmax(0,1fr);justify-items:start;text-align:left;align-items:center;gap:16px}
+  .v-sims .sm-row .sm-teams,.v-sims .sm-axis-rest{display:none}
+  .v-sims .sm-row,.v-sims .sm-axis{grid-template-columns:56px 52px minmax(150px, 1fr) minmax(200px, 1.5fr) 200px}
+}
+@media (max-width:760px){
+  .v-sims .sm-run{grid-template-columns:minmax(0,1fr);justify-items:center;padding:20px 16px;gap:18px}
+  .v-sims .sm-ctl{grid-template-columns:minmax(0,1fr);width:100%;justify-items:stretch}
+  .v-sims .sm-field{justify-items:start}
+  .v-sims .sm-go{grid-template-columns:minmax(0,1fr)}
+  .v-sims .sm-go .btn{width:100%}
+  .v-sims .sm-head h2{font-size:21px}
+  .v-sims .tiles{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .v-sims .tiles b{font-size:26px}
+  .v-sims .sm-tools{display:grid;grid-template-columns:minmax(0,1fr)}
+  .v-sims .sm-search{max-width:none}
+  .v-sims .sm-axis{display:none}
+  .v-sims .sm-row{grid-template-columns:40px 44px minmax(0,1fr) auto;grid-template-areas:"num face who cols" "rng rng rng rng";gap:8px 10px}
+  .v-sims .sm-row > .num{grid-area:num}
+  .v-sims .sm-row > .face{grid-area:face}
+  .v-sims .sm-row > .who{grid-area:who}
+  .v-sims .sm-row > .cols{grid-area:cols;gap:10px}
+  .v-sims .sm-row > .sm-rng{grid-area:rng;padding:0 4px 4px 6px}
+  .v-sims .sm-row .col{min-width:0}
+  .v-sims .sm-tgrid{grid-template-columns:minmax(0,1fr)}
+}
