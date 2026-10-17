@@ -51,8 +51,8 @@
 .v-draft .dr-warp{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;gap:18px}
 .v-draft .dr-warp > section{display:grid;gap:10px;min-width:0}
 .v-draft .dr-feed{position:relative;list-style:none;margin:0 -8px;padding:0 6px;display:grid;align-content:start;gap:2px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;min-height:0}
-.v-draft .dr-feed li{display:grid;grid-template-columns:30px auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:7px 8px;border-radius:16px;content-visibility:auto;contain-intrinsic-size:auto 50px}
-.v-draft .dr-feed li.rh{display:block;position:sticky;top:0;z-index:1;padding:10px 8px 6px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--fg2);background:rgba(18,20,26,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:10px;content-visibility:visible}
+.v-draft .dr-feed li{display:grid;grid-template-columns:30px auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:7px 8px;border-radius:16px}
+.v-draft .dr-feed li.rh{display:block;position:sticky;top:0;z-index:1;padding:10px 8px 6px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--fg2);background:rgba(18,20,26,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:10px}
 .v-draft .dr-feed .n{font-stretch:68%;font-weight:800;font-size:19px;color:var(--fg3);text-align:right;font-variant-numeric:tabular-nums}
 .v-draft .dr-feed .logo{--s:32px}
 .v-draft .dr-feed .who{min-width:0;display:grid}

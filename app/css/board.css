@@ -32,7 +32,7 @@
 
 /* ---------- rows ---------- */
 .v-board .bd-rows{gap:8px}
-.v-board .bd-r{content-visibility:auto;contain-intrinsic-size:auto 72px}
+
 .v-board .bd-r .cols{gap:10px}
 .v-board .bd-r .col{width:60px;flex:none}
 .v-board .bd-r .col.w{width:76px}
