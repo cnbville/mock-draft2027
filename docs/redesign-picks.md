@@ -12,8 +12,10 @@ The redesign follows mockup C, and the Mac app follows the plan Raichel chose on
 
 ## Draft room
 - When the team on the clock calls you, the call waits 5 seconds on Calm or 2.5 seconds on Fast. If you don't open it, that team picks. Calls at your own pick wait until you answer.
-- There is no real-time countdown. The clock ring shows the engine's minutes, and only trade offers use them up.
-- Pace is Calm, Fast or Instant, and the app remembers it. Pause and Resume are new.
+- Your pick has a real 2:00 clock in every round (Raichel asked for exactly 2 minutes). At 0:00 the draft AI makes your pick. The AI teams' picks have no countdown.
+- Each trade offer you make uses its share of your 2:00: one engine minute is 2:00 divided by the round's clock (10 minutes in round 1, so 12 seconds an offer). Teams buying your pick see your time run down.
+- Pause sits on the clock card at all times. It freezes everything: AI picks, calls waiting for your answer, and your clock. You can still make your pick while paused.
+- Pace is Calm, Fast or Instant, and the app remembers it.
 - "Sim to the end" and "New draft" ask first. "Sim to the end" turns down any open calls, and the AI then picks for your team too, as before.
 - The pick reveal shows a letter grade labelled "Quick read". It is Claude's own formula: class rank value against pick value, one step up for a top-3 need, one step down for a need under 0.2. The text below it uses the hit rates.
 - The player cards show the top 30 players still on the board. Search reaches the rest.

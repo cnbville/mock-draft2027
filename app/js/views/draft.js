@@ -9,7 +9,7 @@
 import { h, raw, icon, toast, bottomSheet, moment, openLayers, reduceMotion } from '../ui/dom.js';
 import { logo, teamArt, roomColors, accentStyle, playerStyle } from '../ui/art.js';
 import { face } from '../ui/face.js';
-import { pill, posPill, src, ring, kpis, outcomeBar, outcomeLegend, chips, seg, teamTile, empty } from '../ui/parts.js';
+import { pill, posPill, src, ring, setRing, kpis, outcomeBar, outcomeLegend, chips, seg, teamTile, empty } from '../ui/parts.js';
 import { ht, wt, pct, posName, className, classShort, POS_ORDER } from '../ui/fmt.js';
 import { newDraft, advance, makePick, available, choices, explainPick, classRanks, buildPicks, declineCall, CLOCK } from '../draft.js';
 import { odds, survival } from '../ai/market.js';
@@ -23,17 +23,22 @@ let opts = null;       // the options it started with: { allDeclare, trades, see
 let run = 0;           // bump to stop the pick loop
 let running = null;    // the mode the loop runs in ('auto' | 'one' | 'mine' | 'end'), or null
 let M = null;          // the mounted studio
+let uc = null;         // your clock: { pick, left } (ms left at your current pick)
+let ucTimer = 0;
 const ui = { pos: 'All', q: '', sort: 'consensus', side: '' };
 const PACE = { calm: 800, fast: 100, instant: 0 };
 // How long a call from the team on the clock waits for your answer before it picks instead (ms, by pace).
 const CALL_WAIT = { calm: 5000, fast: 2500, instant: 2500 };
+// Your pick: an exact 2:00 on the clock, every round (Raichel, 2026-10-17). It drives the engine's clock too.
+const PICK_MS = 120000;
+const PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>';
 const PACES = [{ value: 'calm', label: 'Calm' }, { value: 'fast', label: 'Fast' }, { value: 'instant', label: 'Instant' }];
 const layers = new Set();
 
 const randomSeed = () => Math.floor(Math.random() * 9999) + 1;
 const userTurn = () => S && S.next < S.picks.length && S.userTeams.has(S.picks[S.next].owner);
 const track = handle => { if (handle) { layers.add(handle); } return handle; };
-function unmount() { M?.unResize?.(); M = null; }
+function unmount() { stopClock(); M?.unResize?.(); M = null; }
 
 export function view(el, D, arg) {
   const want = arg ? String(arg).toUpperCase() : null;
@@ -226,7 +231,7 @@ function onClick(e, el, D) {
   if (b.dataset.callOpen != null) return openCalls(+b.dataset.callOpen);
   switch (b.dataset.act) {
     case 'pause': run++; running = null; S.paused = true; paint(); break;
-    case 'resume': go('auto'); break;
+    case 'resume': resume(); break;
     case 'one': go('one'); break;
     case 'mine': go('mine'); break;
     case 'end': confirmEnd(); break;
@@ -287,7 +292,7 @@ async function go(mode = 'auto') {
   let n = 0, heavy = 0;
   while (my === run && M) {
     if (S.next >= S.picks.length) return finish();
-    if (S.calls.length) { running = null; paint(); showBanner(); if (!userTurn()) expireCalls(my); return; }
+    if (S.calls.length) { running = null; paint(); showBanner(); if (!userTurn()) expireCalls(my); else startClock(); return; }
     if (userTurn()) {
       // The market runs first at your pick: teams behind you may call to move up.
       const st = advance(S, { until: S.next + 1 });
@@ -324,6 +329,7 @@ function finish() {
 
 function onUserClock() {
   if (!M) return;
+  startClock();
   M.cards.scrollLeft = 0;
   if (ui.side) { ui.side = ''; M.root.dataset.side = ''; M.root.querySelector('[data-switch] .seg')?.set(''); }
   // Bring the player cards (and their Draft buttons) into view when it's your pick.
@@ -348,6 +354,7 @@ function onUserClock() {
 function userPick(i, how) {
   if (!userTurn() || S.calls.length) return;
   run++; running = null;
+  stopClock(); uc = null;
   const k = S.next;
   makePick(S, i, how);
   M.justMade = k;
@@ -376,7 +383,7 @@ function reveal(k) {
     </div>`),
     onClose: reason => {
       layers.delete(m);
-      if (M && S && reason !== 'route-instant' && !running && !userTurn()) go('auto');
+      if (M && S && reason !== 'route-instant' && !running && !userTurn() && !S.paused) go('auto');
       else if (M && userTurn()) { paint(); onUserClock(); }
     },
   }));
@@ -421,7 +428,8 @@ function afterCall(res) {
   if (userTurn()) {
     // The market at your pick has already run; this only checks for nothing new and stops.
     paint(); onUserClock();
-  } else go(M.resumeMode ?? 'auto');
+  } else if (S.paused) paint();
+  else go(M.resumeMode ?? 'auto');
 }
 
 function openTrade(partner) {
@@ -437,6 +445,73 @@ function openTrade(partner) {
   }));
 }
 
+// ---------------------------------------------------------------- pause and your clock
+// Pause stops everything: AI picks, calls waiting for an answer, and your clock. Resume picks up where it was.
+function resume() {
+  if (!S || !M) return;
+  S.paused = false;
+  if (userTurn() && !S.calls.length) { startClock(); paint(); return; }
+  go(M.resumeMode ?? 'auto');
+}
+
+// Your clock runs 2:00 of real time. It also sets the engine's clock (S.clock, in the round's NFL minutes), so
+// teams buying your pick see your time run down, and each offer you make uses its share of the 2:00.
+function engineLeft() {
+  const limit = CLOCK[S.picks[S.next].round - 1];
+  return S.clock.pick === S.next ? PICK_MS * Math.max(0, 1 - S.clock.used / limit) : PICK_MS;
+}
+
+function syncClock() {
+  const limit = CLOCK[S.picks[S.next].round - 1];
+  uc.left = Math.min(uc.left, engineLeft());
+  if (S.clock.pick !== S.next) S.clock = { pick: S.next, used: 0 };
+  S.clock.used = Math.max(S.clock.used, limit * (1 - uc.left / PICK_MS));
+}
+
+function startClock() {
+  stopClock();
+  if (!S || !userTurn()) return;
+  if (!uc || uc.pick !== S.next) uc = { pick: S.next, left: PICK_MS };
+  let last = performance.now();
+  ucTimer = setInterval(() => {
+    if (!M || !S || !userTurn() || uc?.pick !== S.next) return stopClock();
+    const now = performance.now();
+    if (!S.paused) uc.left = Math.max(0, uc.left - (now - last));
+    last = now;
+    syncClock();
+    paintClock();
+    if (uc.left <= 0) timeUp();
+  }, 250);
+  syncClock();
+}
+
+function stopClock() { clearInterval(ucTimer); ucTimer = 0; }
+
+// Time ran out: the AI makes your pick (open calls and sheets close first).
+function timeUp() {
+  stopClock();
+  if (!M || !userTurn()) return;
+  for (const l of [...layers]) l.close('timeout');
+  for (const c of [...S.calls]) declineCall(S, c);
+  M.banner.innerHTML = '';
+  const c = choices(S, S.picks[S.next].owner, 1)[0];
+  toast('Time ran out, so the draft AI made your pick.');
+  if (c) userPick(c.i, 'user-auto');
+}
+
+const clockText = ms => { const s = Math.ceil(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+
+function paintClock() {
+  if (!M || !uc || !userTurn()) return;
+  const box = M.otc.querySelector('[data-uclock]');
+  if (!box) return;
+  const txt = clockText(uc.left);
+  setRing(box.querySelector('.ring'), uc.left / PICK_MS, `${txt} left on your clock${S.paused ? ', paused' : ''}`);
+  const t = box.querySelector('[data-time]');
+  if (t && t.textContent !== txt) t.textContent = txt;
+  box.querySelector('.ring')?.classList.toggle('live', uc.left <= 30000 && !S.paused);
+}
+
 // ---------------------------------------------------------------- painting
 function paint() {
   if (!M || !S || S.next >= S.picks.length) return;
@@ -449,16 +524,15 @@ function paintOtc() {
   const t = teamArt(pk.owner);
   roomColors(M.el, t.c1, t.c2);
   const mine = S.userTeams.has(pk.owner);
-  const limit = CLOCK[pk.round - 1];
-  const used = S.clock.pick === S.next ? S.clock.used : 0;
+  const left = mine ? (uc && uc.pick === S.next ? uc.left : PICK_MS) : 0;
   const rec = M.D.teams.teams[pk.owner]?.record;
   const needs = needsOf(M.D, pk.owner).slice(0, 3);
   const html = String(h`<div class="otc-team">${logo(pk.owner, 76)}<div><p class="label">${mine ? 'You are on the clock' : 'On the clock'}</p><h1 class="wide">${t.name}</h1>
       <p>Pick ${pk.overall} · Round ${pk.round}${pk.owner !== pk.original ? ` · from the ${nick(pk.original)}` : ''}${pk.comp ? ' · compensatory pick (placeholder)' : ''}${rec ? ` · ${rec} this season` : ''}</p></div></div>
-    <div class="dr-clock">${mine
-      ? ring(used / limit, { size: 92, cls: used / limit >= 0.7 ? 'live' : '', label: `${used} of ${limit} minutes used`, inner: h`${limit - used}<small>min left</small>` })
-      : ring(0.28, { size: 92, cls: running ? 'thinking' : '', label: `${limit} minute clock`, inner: h`${limit}<small>min clock</small>` })}
-      <small>${mine ? 'Offers use the clock' : running ? 'Picking now' : S.paused ? 'Paused' : 'Waiting'}</small></div>
+    <div class="dr-clock" ${raw(mine ? 'data-uclock' : '')}>${mine
+      ? ring(left / PICK_MS, { size: 92, cls: left <= 30000 && !S.paused ? 'live' : '', label: `${clockText(left)} left on your clock${S.paused ? ', paused' : ''}`, inner: h`<b data-time>${clockText(left)}</b><small>${S.paused ? 'paused' : 'your clock'}</small>` })
+      : ring(0.28, { size: 92, cls: running && !S.paused ? 'thinking' : '', label: `Pick ${pk.overall}, ${S.paused ? 'paused' : running ? 'picking now' : 'waiting'}`, inner: h`${pk.overall}<small>${S.paused ? 'paused' : running ? 'picking' : 'waiting'}</small>` })}
+      <button type="button" class="dr-pause${S.paused ? ' on' : ''}" data-act="${S.paused ? 'resume' : 'pause'}" aria-pressed="${String(!!S.paused)}">${raw(S.paused ? icon('play') : PAUSE_ICON)}${S.paused ? 'Resume' : 'Pause'}</button></div>
     <div class="needsrow"><span>Biggest needs</span>${needs.map(([g, v]) => pill(g, v >= 0.6 ? 'gold' : ''))}${src('computed', 'From contracts, snaps and depth')}</div>`);
   if (html !== M.lastOtc) { M.otc.innerHTML = html; M.lastOtc = html; }
 }
@@ -471,9 +545,7 @@ function paintCtrl() {
   const out = [];
   if (S.calls.length) out.push(btn('calls', S.calls.length > 1 ? 'Answer the calls' : 'Answer the call', 'primary'));
   else if (mine) out.push(btn('auto', 'Let the AI pick for me', 'primary'));
-  else if (running === 'auto') out.push(btn('pause', 'Pause'));
-  else if (running) out.push(btn('pause', 'Stop'));
-  else out.push(btn('resume', 'Resume', 'primary'));
+  else if (S.paused || !running) out.push(btn('resume', 'Resume the draft', 'primary'));
   if (!mine && !S.calls.length) {
     out.push(btn('one', 'Sim one pick'));
     if (left) out.push(btn('mine', 'Skip to my pick'));

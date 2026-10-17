@@ -81,6 +81,11 @@
 .v-draft .otc-team p{color:var(--fg2);font-size:14px;margin-top:6px}
 .v-draft .dr-clock{display:grid;justify-items:center;gap:6px}
 .v-draft .dr-clock > small{font-size:11px;color:var(--fg3);font-weight:600;letter-spacing:.04em}
+.v-draft .dr-clock .ring b{font-variant-numeric:tabular-nums}
+.v-draft .dr-pause{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 10px;border-radius:999px;border:1px solid var(--edge);background:rgba(255,255,255,.08);color:var(--fg);font:inherit;font-size:12px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:background .15s}
+.v-draft .dr-pause svg{width:12px;height:12px}
+.v-draft .dr-pause:hover{background:rgba(255,255,255,.16)}
+.v-draft .dr-pause.on{background:var(--fg);color:#0b0c10;border-color:transparent}
 .v-draft .ring.thinking > svg{animation:spin 1.6s linear infinite}
 @keyframes spin{to{transform:rotate(270deg)}}
 .v-draft .needsrow{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:13px;color:var(--fg2)}
