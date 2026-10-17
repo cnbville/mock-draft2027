@@ -16,11 +16,13 @@ A front-office draft room for the real 2027 NFL draft. Owner: Raichel (GitHub `c
 
 ## Layout
 - `pipeline/`: Python that turns `raw/` downloads into `app/data/*.json`. `fetch.py` downloads, `run_all.py` rebuilds (about 2 minutes).
-- `app/`: the web page. `js/draft.js` is the mock draft engine (pure logic, every tuning number in `TUNING`); `js/views/` are the screens; `js/store.js` saves your board in the browser.
+- `app/`: the app's front end (Showtime look, plain ES modules, no build). `js/draft.js` and `js/ai/` are the mock draft engine (pure logic, every tuning number in `TUNING`); `js/views/` are the screens; `js/ui/` the shared parts; `js/platform.js` the browser/Mac layer; `js/store.js` saves your board.
+- `src-tauri/`: the Mac app (Tauri 2). How it works: `docs/mac-app.md`. GitHub builds the .dmg (`.github/workflows/mac.yml`, artifact Mock-Draft-2027-mac). Claude's redesign picks waiting for Raichel: `docs/redesign-picks.md`.
 - `data/boards/`: public big boards copied by hand, one CSV per board and date. Add a new one and list it in `BOARDS` in `pipeline/build_app.py`.
 - `tests/`: `npm test` (engine) and `python3 -m unittest discover tests` (data).
 
 ## Commands
 - `npm start`: serve the app at http://localhost:8027.
+- `npm run app:dev` / `npm run app:build`: run or build the Mac app (on a Mac, after `npm ci`).
 - `npm test` and `python3 -m unittest discover tests`.
 - `python3 pipeline/fetch.py --fresh && python3 pipeline/run_all.py`: weekly refresh in season.
