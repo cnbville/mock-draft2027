@@ -488,6 +488,10 @@ textarea.input{height:auto;min-height:88px;padding:10px 14px;line-height:1.5;res
 .toasts{position:fixed;z-index:120;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + var(--tabh, 0px) + 24px);transform:translateX(-50%);display:grid;justify-items:center;gap:8px;width:max-content;max-width:calc(100vw - 32px);pointer-events:none}
 /* while a sheet is open, toasts move to the top so they never cover its buttons */
 html.locked .toasts{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 20px)}
+/* in the draft room on wide windows they sit top right, under the top bar, so they never cover the cards' Draft buttons */
+@media (min-width:761px){
+  html:not(.locked) body[data-route="mock"] .toasts{left:auto;right:var(--gr);bottom:auto;top:calc(env(safe-area-inset-top,0px) + var(--top-h, 68px) + 12px);transform:none;justify-items:end}
+}
 .toast{display:flex;align-items:center;gap:14px;padding:12px 16px 12px 18px;border-radius:var(--radius-md);background:rgba(40,42,50,.94);color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);font-size:14px;line-height:1.35;box-shadow:0 16px 40px rgba(0,0,0,.5), inset 0 0 0 1px var(--edge);animation:rise .4s var(--ease) both;pointer-events:auto}
 .toast.out{animation:fade-out .25s ease both}
 .toast button{border:0;background:none;color:var(--gold);font-weight:700;padding:2px 0}
@@ -541,4 +545,18 @@ html.locked .toasts{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 20px)}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   .room > i,.beam{animation:none!important}
+}
+/* Safari before 16.2 has no color-mix(): plainer fallbacks so rooms, posters, logos and pills keep their colour there */
+@supports not (color: color-mix(in oklab, red, red)){
+  .room{background:linear-gradient(rgba(0,0,0,.54), rgba(0,0,0,.54)) var(--t1)}
+  .poster{background:linear-gradient(165deg, transparent, rgba(0,0,0,.7) 80%) var(--accent)}
+  .split{background:linear-gradient(135deg, rgba(0,0,0,.3), #15171d) var(--accent)}
+  .logo{background:linear-gradient(150deg, var(--lc1, #3a4050), rgba(0,0,0,.6)) var(--lc2, #8a93a6)}
+  .sh-hero{background:linear-gradient(160deg, transparent, rgba(0,0,0,.7) 70%, var(--raised)) var(--accent)}
+  .moment{background:rgba(3,4,6,.92)}
+  .pill.good{background:rgba(48,209,88,.26)}
+  .pill.gold{background:rgba(255,214,10,.22)}
+  .pill.bad{background:rgba(255,69,58,.24)}
+  .btn.danger{background:rgba(255,69,58,.22)}
+  .flag{background:rgba(255,214,10,.16)}
 }

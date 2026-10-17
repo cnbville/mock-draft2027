@@ -8,6 +8,7 @@
 // Loading #player/ID directly shows it over Home. Esc or the close button closes it: history goes back if
 // the sheet was opened by navigation, else the address is set back to the screen underneath.
 
+import './ui/compat.js';
 import { isApp, isMac, loadData, checkForUpdate } from './platform.js';
 import { $, $$, h, toast, sheet, bottomSheet, closeAll, icon } from './ui/dom.js';
 import { initArt } from './ui/art.js';

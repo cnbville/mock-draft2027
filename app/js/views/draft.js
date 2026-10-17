@@ -25,6 +25,8 @@ let running = null;    // the mode the loop runs in ('auto' | 'one' | 'mine' | '
 let M = null;          // the mounted studio
 const ui = { pos: 'All', q: '', sort: 'consensus', side: '' };
 const PACE = { calm: 800, fast: 100, instant: 0 };
+// How long a call from the team on the clock waits for your answer before it picks instead (ms, by pace).
+const CALL_WAIT = { calm: 5000, fast: 2500, instant: 2500 };
 const PACES = [{ value: 'calm', label: 'Calm' }, { value: 'fast', label: 'Fast' }, { value: 'instant', label: 'Instant' }];
 const layers = new Set();
 
@@ -69,7 +71,7 @@ function setup(el, D, pre) {
   el.innerHTML = String(h`<div class="room" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="page below-top dr-setup">
       <header class="dr-shead">
-        <p class="label">Mock Draft 2027</p>
+        <p class="label">Mock Draft</p>
         <h1 class="screen-title wide">Run the draft.</h1>
         <p class="lede">Pick for one team or several. The AI picks for the rest the way real front offices have. It sees the public board through each team's own scouts, and weighs position value by round, needs, scheme fit, its GM's history and runs on a position. AI teams trade up and down in every round, sometimes with 2028 picks, and they call you with offers.</p>
       </header>
@@ -285,7 +287,7 @@ async function go(mode = 'auto') {
   let n = 0, heavy = 0;
   while (my === run && M) {
     if (S.next >= S.picks.length) return finish();
-    if (S.calls.length) { running = null; paint(); showBanner(); return; }
+    if (S.calls.length) { running = null; paint(); showBanner(); if (!userTurn()) expireCalls(my); return; }
     if (userTurn()) {
       // The market runs first at your pick: teams behind you may call to move up.
       const st = advance(S, { until: S.next + 1 });
@@ -331,7 +333,12 @@ function onUserClock() {
     const topbar = document.querySelector('.top')?.getBoundingClientRect().bottom ?? 70;
     const tab = document.querySelector('.tabbar');
     const bottom = innerHeight - (tab && getComputedStyle(tab).display !== 'none' ? tab.offsetHeight : 0);
-    if (r.bottom > bottom) window.scrollBy({ top: Math.max(0, Math.min(r.bottom - bottom + 12, r.top - topbar - 8)), behavior: reduceMotion ? 'auto' : 'smooth' });
+    // Keep the clock card in view when the whole stage fits; the Draft buttons always come into view.
+    const otcTop = M.otc.parentElement.getBoundingClientRect().top;
+    const btn = M.cards.querySelector('[data-draft]')?.getBoundingClientRect();
+    const must = btn ? btn.bottom - bottom + 12 : 0;
+    const keep = window.matchMedia('(max-width:760px)').matches ? r.top - topbar - 8 : otcTop - topbar - 8;
+    if (r.bottom > bottom) window.scrollBy({ top: Math.max(0, must, Math.min(r.bottom - bottom + 12, keep)), behavior: reduceMotion ? 'auto' : 'smooth' });
   });
   M.otc.parentElement.classList.remove('pulse');
   void M.otc.parentElement.offsetWidth;
@@ -377,6 +384,16 @@ function reveal(k) {
 }
 
 // ---------------------------------------------------------------- calls and trades
+// A team on the clock that calls you can't wait long: if you don't open the call, it picks instead.
+// Calls at your own pick stay until you answer them.
+async function expireCalls(my) {
+  if (!(await hold(CALL_WAIT[opts?.pace ?? 'calm'] ?? 8000, my))) return;
+  if (my !== run || !M || S.paused || userTurn() || !S.calls.length) return;
+  for (const c of [...S.calls]) declineCall(S, c);
+  M.banner.innerHTML = '';
+  go(M.resumeMode ?? 'auto');
+}
+
 function showBanner() {
   if (!M) return;
   const c = S.calls[0];

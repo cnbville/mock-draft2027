@@ -2,6 +2,7 @@
 // slices, seeds and merge) off the main thread, so the page stays responsive during a long run.
 // Messages in: {D: {prospects, teams, value_chart, ai_model, trade_market}, opts: {n, allDeclare, trades}}.
 // Messages out: {progress} while it runs, then {done: true, sims}; {error} if it fails.
+import './compat.js';
 import { shared, runSims } from '../views/shared.js';
 
 self.onmessage = async e => {

@@ -252,6 +252,42 @@
 .v-draft .dr-trades{max-height:560px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:6px}
 .v-draft .dr-udfa{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:0 16px;max-height:520px;overflow-y:auto;scrollbar-width:thin;padding:0 8px}
 
+@supports not (color: color-mix(in oklab, red, red)){ .v-draft .dr-card .card-top{background:linear-gradient(165deg, transparent, rgba(0,0,0,.7) 85%) var(--accent)} }
+/* ---------- short windows (the Mac window is 900 tall by default, 720 at least) ----------
+   The clock card and the cards' Draft buttons must both fit on screen at your pick: the needs row moves up
+   beside the clock, and the card art and spacing get tighter. */
+@media (min-width:761px) and (max-height:1000px){
+  .v-draft .dr-stage{gap:12px}
+  .v-draft .dr-otc{padding:14px 20px;gap:10px}
+  .v-draft .dr-otc-main{gap:8px 18px}
+  .v-draft .dr-otc-main > .otc-team{grid-column:1;grid-row:1}
+  .v-draft .dr-otc-main > .dr-clock{grid-column:2;grid-row:1 / span 2}
+  .v-draft .dr-otc-main > .needsrow{grid-column:1;grid-row:2}
+  .v-draft .otc-team .logo{--s:56px;padding:6px}
+  .v-draft .otc-team h1{font-size:clamp(22px, 2.4vw, 34px)}
+  .v-draft .otc-team p{margin-top:4px}
+  .v-draft .dr-clock .ring{--sz:76px!important}
+  .v-draft .dr-ctrl{padding-top:10px}
+  .v-draft .dr-pickbar{gap:8px 14px}
+  .v-draft .dr-cards{padding-block:4px 12px}
+  .v-draft .dr-card .card-top{height:128px}
+  .v-draft .dr-card .rk{font-size:96px}
+  .v-draft .dr-card .card-top .face{inset:10px 0 0 70px}
+  .v-draft .dr-card .card-body{padding:12px 16px 14px;gap:6px}
+  .v-draft .dr-card h3{font-size:20px}
+  .v-draft .dr-card .sub{margin-top:4px}
+  .v-draft .dr-card .kpis b{font-size:22px}
+}
+@media (min-width:761px) and (max-height:820px){
+  .v-draft .dr-stage{gap:10px}
+  .v-draft .dr-otc{padding:12px 18px}
+  .v-draft .otc-team h1{font-stretch:100%;font-size:clamp(20px, 2vw, 28px)}
+  .v-draft .dr-cards{padding-block:2px 10px}
+  .v-draft .dr-card .card-body{gap:5px}
+  .v-draft .dr-card .card-top{height:108px}
+  .v-draft .dr-card .rk{font-size:84px}
+  .v-draft .dr-card .card-top .face{inset:8px 10px 0 90px}
+}
 /* ---------- smaller windows ---------- */
 @media (max-width:1180px){
   .v-draft .dr-studio{grid-template-columns:minmax(0,1fr) minmax(0,300px)}

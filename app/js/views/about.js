@@ -54,7 +54,7 @@ function valueChart(D) {
   const x = p => L + (p - 1) / 256 * (W - L - R);
   const y = v => T + (1 - v / maxV) * (H - T - B);
   const line = key => pts.filter(p => p[key] != null).map((p, i) => `${i ? 'L' : 'M'}${x(p.pick).toFixed(1)},${y(p[key]).toFixed(1)}`).join('');
-  const area = `${line('value')}L${x(pts.at(-1).pick).toFixed(1)},${y(0)}L${x(1)},${y(0)}Z`;
+  const area = `${line('value')}L${x(pts[pts.length - 1].pick).toFixed(1)},${y(0)}L${x(1)},${y(0)}Z`;
   const starts = [];
   for (const k of buildPicks(D.teams)) if (!starts[k.round]) starts[k.round] = k.overall;
   const at = p => pts.find(q => q.pick === p);
