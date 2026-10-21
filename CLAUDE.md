@@ -16,7 +16,7 @@ A front-office draft room for the real 2027 NFL draft. Owner: Raichel (GitHub `c
 
 ## Layout
 - `pipeline/`: Python that turns `raw/` downloads into `app/data/*.json`. `fetch.py` downloads, `run_all.py` rebuilds (about 2 minutes).
-- `app/`: the app's front end (Showtime look, plain ES modules, no build). `js/draft.js` and `js/ai/` are the mock draft engine (pure logic, every tuning number in `TUNING`); `js/views/` are the screens; `js/ui/` the shared parts; `js/platform.js` the browser/Mac layer; `js/store.js` saves your board.
+- `app/`: the app's front end (Showtime look, plain ES modules, no build). `js/draft.js` and `js/ai/` are the mock draft engine (pure logic, every tuning number in `TUNING`); `js/views/` are the screens; `js/ui/` the shared parts; `js/platform.js` the browser/Mac layer; `js/store.js` saves your board and your standings entries; `js/standings.js` and `js/live.js` fetch live standings and re-project the draft order.
 - `src-tauri/`: the Mac app (Tauri 2). How it works: `docs/mac-app.md`. GitHub builds the .dmg (`.github/workflows/mac.yml`, artifact Mock-Draft-2027-mac). Claude's redesign picks waiting for Raichel: `docs/redesign-picks.md`.
 - `data/boards/`: public big boards copied by hand, one CSV per board and date. Add a new one and list it in `BOARDS` in `pipeline/build_app.py`.
 - `tests/`: `npm test` (engine) and `python3 -m unittest discover tests` (data).

@@ -1,7 +1,7 @@
-// Your board, notes, grades and combine entries. Saved in this browser, and exportable to a file.
+// Your board, notes, grades, combine entries and standings edits. Saved in this browser, and exportable to a file.
 const KEY = 'mockdraft2027.v1';
 
-const empty = () => ({ board: [], tiers: {}, notes: {}, grades: {}, combine: {}, reports: {}, flags: {}, settings: {} });
+const empty = () => ({ board: [], tiers: {}, notes: {}, grades: {}, combine: {}, reports: {}, flags: {}, standings: {}, settings: {} });
 
 let data = load();
 
@@ -34,6 +34,9 @@ export const store = {
   addReport(id, r) { (data.reports[id] ??= []).push(r); save(); },
   removeReport(id, i) { data.reports[id]?.splice(i, 1); save(); },
   setFlag(id, flag, on) { (data.flags[id] ??= {})[flag] = on; save(); },
+  // Your standings for a team: { w, l, t, po } (any of them blank). null clears the team back to the fetched record.
+  setStanding(t, entry) { if (entry) data.standings[t] = entry; else delete data.standings[t]; save(); },
+  clearStandings() { data.standings = {}; save(); },
   setting(k, v) { if (v === undefined) return data.settings[k]; data.settings[k] = v; save(); },
   exportJSON: () => JSON.stringify({ app: 'mock-draft2027', saved: new Date().toISOString(), ...data }, null, 1),
   importJSON(text) {

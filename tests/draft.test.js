@@ -83,10 +83,19 @@ test('simulations: about 257 players drafted per run, sensible first-round shape
   assert.ok(Math.abs(drafted - 257) < 1e-6);
   const r1 = {};
   for (const x of s.summary) r1[prospects[x.i].group] = (r1[prospects[x.i].group] ?? 0) + x.r1;
-  // Specialists essentially never go in round 1; QBs and edge rushers do.
-  assert.ok((r1.K ?? 0) + (r1.P ?? 0) + (r1.LS ?? 0) < 0.05);
+  // Specialists almost never go in round 1; QBs and edge rushers do. Real drafts: one in 27 (Sebastian Janikowski,
+  // 2000; published), about 0.04 a draft. The engine's own rate is about 0.02 (computed, 300 drafts), so 40 drafts
+  // can draw 2 or 3 by chance. Fail only at 4 or more, which a realistic rate gives about 6% of the time.
+  assert.ok((r1.K ?? 0) + (r1.P ?? 0) + (r1.LS ?? 0) < 0.1);
   assert.ok(r1.QB > 1 && r1.EDGE > 1);
   assert.ok(s.round1TradesPerDraft > 2 && s.round1TradesPerDraft < 10);
+});
+
+test('the most likely draft takes no kicker, punter or long snapper in round 1', () => {
+  const st = draft({ noise: false });
+  D.advance(st, { stopAtUser: false, until: 32 });
+  const spec = st.picks.slice(0, 32).filter(p => ['K', 'P', 'LS'].includes(prospects[p.player].group));
+  assert.deepEqual(spec, []);
 });
 
 test('UDFA rush and class grades cover every team', () => {
