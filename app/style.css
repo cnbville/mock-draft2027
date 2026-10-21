@@ -74,3 +74,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .mockgrid { grid-template-columns: 1fr 2fr 1fr; }
 @media (max-width: 900px) { .mockgrid { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .head img { width: 72px; height: 54px; } }
+
+/* Standings page and bar: Showtime (showtime/showtime.css) tokens and components, only inside .st. */
+.st th { position: static; background: transparent; cursor: default; }
+.st td, .st th { border-bottom-color: var(--hair); }
+.st a { color: var(--fg); }
+.st a.st-btn:hover { text-decoration: none; }
+.st-page { display: grid; gap: var(--space-5); padding: var(--space-6) var(--gutter); border-radius: var(--radius-xl); }
+.st-head { display: grid; gap: var(--space-2); max-width: 78ch; }
+.st-head h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1; }
+.st-bar-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); margin: 0 0 12px; border-radius: var(--radius-lg); background: var(--raised); box-shadow: inset 0 0 0 1px var(--hair); font-size: 13px; }
+.st-page .st-bar-row { margin: 0; }
+.st-bar-text { flex: 1 1 240px; }
+.st-bar-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.st-surface { background: var(--raised); border-radius: var(--radius-xl); box-shadow: inset 0 0 0 1px var(--hair); }
+.st-confs { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 600px), 1fr)); }
+.st-table .st-divrow th { text-align: left; padding-top: var(--space-4); }
+.st-input { width: 48px; padding: 5px 7px; border: 1px solid var(--hair); border-radius: var(--radius-xs); background: var(--fill-1); color: var(--fg); font: inherit; font-variant-numeric: tabular-nums; text-align: right; }
+select.st-input { width: auto; text-align: left; }
+.st-input::placeholder { color: var(--fg3); }
+.st-input:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+.st-order { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.st-order li { grid-template-columns: 24px 32px minmax(0, 1fr) auto; }
+.st-order .st-mark { --s: 32px; font-size: 10px; }
+.st h1, .st h2, .st h3 { font-family: var(--font-sans); }

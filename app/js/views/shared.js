@@ -1,5 +1,7 @@
-// State shared between views: the latest simulation run.
+// State shared between views: the latest simulation run, and the standings behind the draft order.
 import { simulate } from '../draft.js';
+import { chooseGames, applyStandings } from '../standings.js';
+import { store } from '../store.js';
 
 export const shared = { sims: null, running: null, listeners: new Set() };
 
@@ -55,4 +57,31 @@ function merge(parts, len, opts) {
   }
   const trades = parts.reduce((s, p) => s + p.round1TradesPerDraft * p.n, 0) / n;
   return { n, summary, firstPick, round1TradesPerDraft: trades, ...opts };
+}
+
+// Your standings, unless you switched them off on the Standings page.
+export const myStandings = () => (store.setting('standingsOff') ? {} : store.get().standings);
+
+// Re-project the order. live: fetch the newest games (true, or a fetch already started); false: reuse the games in
+// hand and only re-apply your records.
+export async function refreshStandings(D, { live = true } = {}) {
+  if (live || !D.games) D.games = await chooseGames(D.teams, { live });
+  applyStandings(D, D.games, myStandings());
+  shared.sims = null;  // simulations run on the old order are stale
+  const f = document.getElementById('foot-standings');
+  if (f) f.textContent = standingsLine(D.teams);
+}
+
+export function standingsLine(T) {
+  const s = T.standings ?? {};
+  const when = s.fetchedAt ? new Date(s.fetchedAt).toLocaleString() : '';
+  const failed = s.error ? `Live standings failed (${s.error}); ` : '';
+  const src = {
+    live: `Standings live from nflverse, games through ${T.as_of}.`,
+    cache: `${failed}using the games this browser last fetched (${when}), through ${T.as_of}.`,
+    built: `${failed}using the games built into the app, through ${T.as_of}.`,
+    none: `${failed}no game data, so the built order stands (as of ${T.as_of}).`,
+  }[s.source] ?? `Standings as of ${T.as_of}.`;
+  const n = s.manual?.length ?? 0;
+  return src.charAt(0).toUpperCase() + src.slice(1) + (n ? ` Your entries apply to ${n} team${n > 1 ? 's' : ''}.` : '');
 }

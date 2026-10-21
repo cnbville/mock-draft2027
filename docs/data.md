@@ -13,7 +13,7 @@ Every figure in the app is labelled as **published** (with its source), **comput
 | `combine.csv` | nflverse | Size and test percentiles by position |
 | `contracts.parquet` | nflverse (from OverTheCap) | Pay, contract end years, cap commitments |
 | `roster_2026.csv`, `snaps_2026.csv` | nflverse | NFL starters, ages, snap shares |
-| `games.csv`, `trades.csv` | nflverse `nfldata` | 2026 results and schedule, pick trades |
+| `games.csv`, `trades.csv` | nflverse `nfldata` | 2026 results and schedule, pick trades. The page also fetches `games.csv` live for the standings; 2025-2026 games are built into `teams.json` (`games`) as its fallback |
 | `data/boards/*.csv` (in git) | PFF (2026-04-28), CBS Sports Mike Renner (2026-10-14), NFL Draft Buzz (fetched 2026-10-15) | The consensus |
 
 The public boards were copied from the public pages by a summariser on 2026-10-15. Spot-check them. The CBS list had Carter Smith twice (99 and 108); the second was dropped.

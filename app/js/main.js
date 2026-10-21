@@ -1,4 +1,4 @@
-import { $, $$ } from './util.js';
+import { $, $$, esc } from './util.js';
 import { boardView } from './views/board.js';
 import { profileView } from './views/profile.js';
 import { mineView } from './views/mine.js';
@@ -6,17 +6,24 @@ import { teamsView, teamView } from './views/teams.js';
 import { mockView } from './views/mock.js';
 import { simsView } from './views/sims.js';
 import { aboutView } from './views/about.js';
+import { standingsView } from './views/standings.js';
+import { refreshStandings, standingsLine } from './views/shared.js';
+import { fetchGames } from './standings.js';
 
 const FILES = ['prospects', 'teams', 'value_chart', 'hit_rates', 'combine_pct', 'meta', 'model_report', 'ai_model',
   'trade_market'];
 
 async function load() {
   const out = {};
+  let live = null;
   await Promise.all(FILES.map(async f => {
     const r = await fetch(`data/${f}.json`);
     if (!r.ok) throw new Error(`Could not load data/${f}.json`);
     out[f] = await r.json();
+    // Start the live standings as soon as the season is known, while the big files still load.
+    if (f === 'teams') { live = fetchGames((out.teams.draft_year ?? 2027) - 1); live.catch(() => {}); }
   }));
+  await refreshStandings(out, { live });
   out.byId = new Map(out.prospects.map(p => [p.id, p]));
   out.index = new Map(out.prospects.map((p, i) => [p.id, i]));
   return out;
@@ -24,7 +31,7 @@ async function load() {
 
 const routes = {
   board: boardView, player: profileView, mine: mineView, teams: teamsView, team: teamView,
-  mock: mockView, sims: simsView, about: aboutView,
+  mock: mockView, sims: simsView, about: aboutView, standings: standingsView,
 };
 
 let D;
@@ -33,7 +40,7 @@ function route() {
   const [name, arg] = (location.hash.slice(1) || 'board').split('/');
   const view = routes[name] ?? boardView;
   $$('#nav a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === `#${name}` ||
-    (name === 'player' && a.getAttribute('href') === '#board') || (name === 'team' && a.getAttribute('href') === '#teams')));
+    (name === 'player' && a.getAttribute('href') === '#board') || ((name === 'team' || name === 'standings') && a.getAttribute('href') === '#teams')));
   const el = $('#view');
   el.innerHTML = '';
   view(el, D, arg ? decodeURIComponent(arg) : undefined);
@@ -42,7 +49,7 @@ function route() {
 
 load().then(d => {
   D = d;
-  $('#foot').textContent = `Data built ${d.meta.built}. Standings as of ${d.teams.as_of}. ` +
+  $('#foot').innerHTML = `Data built ${d.meta.built}. <span id="foot-standings">${esc(standingsLine(d.teams))}</span> ` +
     'Sources: cfbfastR-data (college stats and rosters), nflverse (drafts, combine, rosters, snaps, contracts, games, trades), ' +
     'public big boards (PFF, CBS Sports, NFL Draft Buzz). Not affiliated with any of them.';
   window.addEventListener('hashchange', route);
