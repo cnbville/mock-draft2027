@@ -16,7 +16,7 @@ A front-office draft room for the real 2027 NFL draft. Owner: Raichel (GitHub `c
 
 ## Layout
 - `pipeline/`: Python that turns `raw/` downloads into `app/data/*.json`. `fetch.py` downloads, `run_all.py` rebuilds (about 2 minutes).
-- `app/`: the web page. `js/draft.js` is the mock draft engine (pure logic, every tuning number in `TUNING`); `js/views/` are the screens; `js/store.js` saves your board in the browser.
+- `app/`: the web page. `js/draft.js` is the mock draft engine (pure logic, every tuning number in `TUNING`); `js/views/` are the screens; `js/store.js` saves your board (and your standings entries) in the browser; `js/standings.js` fetches live standings and re-projects the draft order. New UI uses the Showtime design system (`app/showtime/showtime.css`, scoped to `.st`).
 - `data/boards/`: public big boards copied by hand, one CSV per board and date. Add a new one and list it in `BOARDS` in `pipeline/build_app.py`.
 - `tests/`: `npm test` (engine) and `python3 -m unittest discover tests` (data).
 

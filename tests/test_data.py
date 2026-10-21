@@ -72,6 +72,17 @@ class AppData(unittest.TestCase):
         dist = self.T["teams"][self.T["order"][0]]["slot_dist"]
         self.assertEqual(sum(dist), self.T["sims"])
 
+    def test_built_in_games(self):
+        # The page's fallback when it can't fetch live games: this season and last, every team in both.
+        season = self.T["draft_year"] - 1
+        g = self.T["games"]
+        for s in (season - 1, season):
+            reg = [x for x in g if x["s"] == s and x["type"] == "REG"]
+            self.assertEqual({x["home"] for x in reg} | {x["away"] for x in reg}, set(self.T["teams"]))
+        played = [x for x in g if x["s"] == season and x["hs"] is not None]
+        self.assertTrue(played)
+        self.assertLessEqual(max(x["day"] for x in played), self.T["as_of"])
+
 
 if __name__ == "__main__":
     unittest.main()

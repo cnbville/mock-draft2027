@@ -2,6 +2,7 @@ import { esc, fmt, bar } from '../util.js';
 import { buildPicks, DEFAULT_MODEL } from '../draft.js';
 import { teamFacts, compile, NEED_FEATURES, GROUPS } from '../ai/model.js';
 import { shared } from './shared.js';
+import { standingsBar, wireRefresh } from './standings.js';
 
 // Needs as the draft AI weighs them in rounds 1-2: each roster fact times the weight fitted on real drafts
 // (tools/fit_pick_model.mjs). Highest first.
@@ -56,12 +57,13 @@ export function teamsView(el, D) {
     <p class="muted small">Projected 2027 order from the 2026 season so far (as of ${esc(T.as_of)}) plus ${T.sims.toLocaleString()} simulations of the rest of the season and the playoffs.
     Needs: how much each roster fact (2026 snaps, pay, draft pedigree, age, contracts ending, depth, recent picks, QB play) moved real teams' early picks,
     fitted on past drafts (computed). Cap space uses an estimated 2027 cap of ${fmt.money(T.cap_2027_estimate)}.</p>
+    ${standingsBar(D, { edit: true })}
     <div class="tablewrap"><table><thead><tr><th class="num">Proj.</th><th>Team</th><th>Record</th><th class="num">Proj. wins</th><th>Pick range (10-90%)</th>
       <th class="num">Picks</th><th>Top needs</th><th class="num">Cap space (est.)</th><th class="num">Draft trades / yr</th></tr></thead><tbody>
     ${T.order.map((t, i) => {
       const x = T.teams[t];
       const needs = fieldNeeds(D, t).slice(0, 4).map(n => n.g).join(', ');
-      return `<tr class="click" data-t="${t}"><td class="num">${i + 1}</td><td><a href="#team/${t}">${esc(x.name)}</a></td><td>${x.record}</td>
+      return `<tr class="click" data-t="${t}"><td class="num">${i + 1}</td><td><a href="#team/${t}">${esc(x.name)}</a></td><td>${x.record}${x.record_manual ? ' <span class="tag">yours</span>' : ''}</td>
         <td class="num">${x.proj_wins}</td><td>${x.slot_p10}-${x.slot_p90}</td><td class="num">${picksOf(D, t).length}</td><td>${needs}</td>
         <td class="num">${fmt.money(x.cap_space_2027_est)}</td><td class="num">${x.habits.draft_trades_per_year}</td></tr>`;
     }).join('')}</tbody></table></div>
@@ -69,6 +71,7 @@ export function teamsView(el, D) {
     <p class="small muted">From the nflverse trade list (ends April 2026). When a team traded a pick in a round where it held two, the data doesn't say which; the tool assumes its own.</p>
     <div class="panel small">${T.trade_log.map(esc).join('<br>')}</div>`;
   el.querySelectorAll('tr[data-t]').forEach(tr => tr.onclick = e => { if (!e.target.closest('a')) location.hash = `team/${tr.dataset.t}`; });
+  wireRefresh(el, D, () => teamsView(el, D));
 }
 
 export function teamView(el, D, t) {
