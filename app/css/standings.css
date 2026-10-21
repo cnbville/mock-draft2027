@@ -1,0 +1,33 @@
+/* Standings (#standings) and the source bar on Teams. Scoped under .v-standings and .st-bar.
+   Shared pieces (.surface, .pill, .btn, .input, .select, .seg, .tbl, .flag, .actions) come from showtime.css. */
+.v-standings{display:block;padding-bottom:40px}
+.v-standings .screen-head .lede + .lede{margin-top:6px}
+.v-standings .screen-head .note .src{margin-right:8px}
+
+.st-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:12px 16px;margin:0 0 18px;border-radius:var(--radius-lg);font-size:13px}
+.st-bar-text{flex:1 1 260px;color:var(--fg2);min-width:0}
+.st-bar-actions{display:flex;flex-wrap:wrap;gap:8px}
+.v-standings .st-bar{margin:0 0 14px}
+
+.v-standings .st-mode{margin:0 0 14px}
+.v-standings #st-msg:not(:empty){margin:0 0 14px}
+.v-standings .st-confs{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.v-standings .st-conf{padding:18px 16px 12px;display:grid;gap:8px;min-width:0}
+.v-standings .st-conf h2{font-size:20px}
+.v-standings .tbl th.l,.v-standings .tbl td.l{text-align:left}
+.v-standings .st-div th{padding-top:18px;border-bottom:0}
+.v-standings .st-team{display:inline-flex;align-items:center;gap:10px;font-weight:700}
+.v-standings .st-team:hover span{text-decoration:underline;text-underline-offset:3px}
+.v-standings tr.mine td{background:var(--fill-1)}
+.v-standings .st-num{width:56px;padding:0 8px;text-align:right;font-variant-numeric:tabular-nums}
+.v-standings .st-po{min-width:150px}
+.v-standings .st-actions{margin:18px 0 26px}
+
+.v-standings .st-order{padding:18px 20px 20px;display:grid;gap:8px}
+.v-standings .st-order ol{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:4px 18px}
+.v-standings .st-order li{display:grid;grid-template-columns:30px 30px minmax(0,1fr) auto;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--radius-md)}
+.v-standings .st-order li:nth-child(odd){background:var(--fill-1)}
+.v-standings .st-n{font-size:22px;font-weight:800;color:var(--fg3);text-align:right}
+.v-standings .st-name{min-width:0}
+.v-standings .st-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v-standings .st-name small{display:block;color:var(--fg2);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

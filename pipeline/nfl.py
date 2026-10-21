@@ -61,6 +61,17 @@ def season_games():
     return g
 
 
+def app_games():
+    """This season and last, regular season and playoffs, for the page's own projection (app/js/standings.js).
+    The page fetches newer games live; these are its fallback when it can't."""
+    g = pd.read_csv(RAW / "games.csv", low_memory=False)
+    g = g[g.season.isin([CURRENT_SEASON - 1, CURRENT_SEASON])].sort_values(["season", "week", "gameday"])
+    num = lambda v: None if pd.isna(v) else int(v)
+    return [{"s": int(r.season), "type": r.game_type, "wk": int(r.week), "day": str(r.gameday), "away": r.away_team,
+             "home": r.home_team, "as": num(r.away_score), "hs": num(r.home_score), "neutral": r.location == "Neutral"}
+            for r in g.itertuples()]
+
+
 def ratings(g):
     """Team strength in points per game: 2026 margin, shrunk toward half of 2025's (estimated weights)."""
     played = g[g.result.notna()]
@@ -346,7 +357,7 @@ def main():
                      "latest game in the data, projected by simulation (computed, estimated weights)",
            "as_of": str(g[(g.season == CURRENT_SEASON) & g.result.notna()].gameday.max()),
            "cap_2027_estimate": CAP_2027_ESTIMATE, "sims": SIMS, "order": order, "teams": teams, "picks": picks,
-           "trade_log": log}
+           "trade_log": log, "games": app_games()}
     APP_DATA.mkdir(parents=True, exist_ok=True)
     (APP_DATA / "teams.json").write_text(json.dumps(out))
     print("order:", order, file=sys.stderr)

@@ -16,10 +16,13 @@ import { initFaces } from './ui/face.js';
 import { install } from './ui/parts.js';
 import { initSearch } from './ui/search.js';
 import { date, dateLong } from './ui/fmt.js';
+import { fetchGames } from './standings.js';
+import { refreshStandings, standingsLine } from './live.js';
 
 const FILES = ['prospects', 'teams', 'value_chart', 'hit_rates', 'combine_pct', 'meta', 'model_report', 'ai_model',
   'trade_market', 'art'];
 const OPTIONAL = ['art'];
+const DRAFT_YEAR = 2027; // the season fetched live is the one before; data/teams.json's draft_year says the same
 
 if (isApp) document.documentElement.classList.add('app');
 if (isApp && isMac) document.documentElement.classList.add('app-mac');
@@ -31,6 +34,7 @@ const ROUTES = {
   mine: { mod: 'mine', title: 'My Board', tab: 'mine' },
   teams: { mod: 'teams', title: 'Teams', tab: 'teams' },
   team: { mod: 'teams', title: 'Teams', tab: 'teams' },
+  standings: { mod: 'standings', title: 'Standings', tab: 'teams' },
   sims: { mod: 'sims', title: 'Simulations', tab: 'sims', more: true },
   about: { mod: 'about', title: 'Model and data', tab: 'about', more: true },
   kit: { mod: 'kit', title: 'Component kit', tab: '' },
@@ -189,11 +193,10 @@ function setPill(ready) {
 
 function renderFoot() {
   const boards = (D.meta.boards ?? []).map(b => `${b.label} (${b.date})`).join(', ');
-  const asOf = D.teams.as_of;
   $('#foot').innerHTML = String(h`
     <div class="foot-row"><a class="brand wide" href="#home">Mock Draft <span>2027</span></a>
       <nav aria-label="More"><a href="#about">Model and data</a><a href="#sims">Simulations</a><a href="#mine">My Board</a></nav></div>
-    <p>${dataStatus().long} Standings as of ${dateLong(asOf)}. The draft order is the season so far plus ${(D.teams.sims ?? 2000).toLocaleString('en-US')} simulations of the rest (computed).</p>
+    <p>${dataStatus().long} ${standingsLine(D.teams)} The draft order is the season so far plus ${(D.teams.sims ?? 2000).toLocaleString('en-US')} simulations of the rest (computed).</p>
     <p>Sources: cfbfastR-data (college stats and rosters), nflverse (drafts, combine, rosters, snaps, contracts, games, trades) and the public big boards: ${boards}. ${D.art?.source ? `Logos and colours: ${D.art.source}.` : ''} Player photos load from ESPN. Not affiliated with the NFL, any team, or any of these sources.</p>`);
 }
 
@@ -203,10 +206,11 @@ function openMore() {
   const menu = h`<h3 class="wide">More</h3>
     <ul class="menu">
       <li><a href="#sims">${icon('dice')}<span>Simulations<small>Run hundreds of mock drafts at once</small></span></a></li>
+      <li><a href="#standings">${icon('refresh')}<span>Standings<small>Live results and your own records</small></span></a></li>
       <li><a href="#about">${icon('info')}<span>Model and data<small>How it works, sources and tests</small></span></a></li>
       ${updated ? h`<li><button type="button" id="moreReload">${icon('refresh')}<span>New data ready<small>Reload to use the data from ${date(updated)}</small></span></button></li>` : ''}
     </ul>
-    <p class="note">${st.long} Standings as of ${dateLong(D.teams.as_of)}.</p>`;
+    <p class="note">${st.long} ${standingsLine(D.teams)}</p>`;
   const bs = bottomSheet({ content: menu, label: 'More' });
   bs.el.addEventListener('click', e => {
     if (e.target.closest('#moreReload')) { location.reload(); return; }
@@ -216,6 +220,9 @@ function openMore() {
 
 // ---------- boot ----------
 async function boot() {
+  // Start the live standings now, while the data loads. A failure is handled below, never thrown here.
+  const live = fetchGames(DRAFT_YEAR - 1);
+  live.catch(() => {});
   try {
     D = await loadData(FILES, { optional: OPTIONAL });
   } catch (e) {
@@ -225,6 +232,7 @@ async function boot() {
   }
   D.byId = new Map(D.prospects.map(p => [p.id, p]));
   D.index = new Map(D.prospects.map((p, i) => [p.id, i]));
+  await refreshStandings(D, { live }); // the order and records follow the latest games; falls back to the saved or built-in ones
   window.__md27 = D; // handy in the console while building screens
   initArt(D);
   await initFaces();
@@ -233,6 +241,7 @@ async function boot() {
   setPill(false);
   renderFoot();
   $('#moreBtn').addEventListener('click', openMore);
+  document.addEventListener('md:standings', () => { if (!$('#foot').hidden) renderFoot(); });
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('hashchange', route);
   await route();

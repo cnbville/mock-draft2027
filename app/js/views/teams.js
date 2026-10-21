@@ -18,6 +18,7 @@ import { money, pct, num, int, rank, date, dateLong, posName, plural, dash } fro
 import { buildPicks, DEFAULT_MODEL } from '../draft.js';
 import { teamFacts, compile, NEED_FEATURES, GROUPS } from '../ai/model.js';
 import { shared } from './shared.js';
+import { standingsBar, wireRefresh } from './standings.js';
 
 // ---------- data helpers (same maths as the old screen) ----------
 
@@ -122,6 +123,7 @@ function grid(el, D) {
     <div class="screen-head"><p class="label">Teams</p><h1 class="screen-title">All 32 teams</h1>
       <p class="lede">In projected 2027 draft order. The order comes from the 2026 season so far (as of ${dateLong(T.as_of)}) and ${int(T.sims)} simulations of the rest of the season and the playoffs.</p>
       <p class="note">${src('computed', 'Projected order and slot ranges')} ${src('computed', 'Needs: fitted on past drafts')} ${src('estimated', `Cap space, with a ${money(T.cap_2027_estimate)} cap`)}</p></div>
+    ${standingsBar(D, { edit: true })}
     <div class="tm-bar-row"><span class="tm-mode"></span></div>
     <div class="tm-body"></div>
     <section class="tm-sec tm-alltrades">
@@ -135,6 +137,7 @@ function grid(el, D) {
   };
   el.querySelector('.tm-mode').replaceWith(seg([{ value: 'tiles', label: 'Tiles' }, { value: 'table', label: 'Table' }], gridMode, v => { gridMode = v; saveMode(v); draw(); }, 'Show teams as'));
   draw();
+  wireRefresh(el, D, () => grid(el, D));
 }
 
 // slot distribution: one bar per first-round slot
